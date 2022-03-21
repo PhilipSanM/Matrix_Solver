@@ -26,11 +26,13 @@ typedef struct{
     float matrix[TAM][TAM];
 }Matrix;
 
+
 void MatrixPrinting(Matrix* matrix, int n, int unknown);
 void MatrixFilling(Matrix* matrix, int n, int unknown, int rows);
 void OperacionGauss(Matrix* matrix, int n);
 void MatrixSolution(Matrix* matrix, int n,int unknown);
 void SwapA(Matrix* matrix, int n, int unknown);
+void SwapB(Matrix* matrix, int n, int unknown);
 void MatrixStarting(Matrix* matrix, int Tam);
 
 int i,j,k;
@@ -55,8 +57,6 @@ void main(){
         rows=x;
     }
 
-
-    //Llenado de matrices
     MatrixFilling(&matrix,n,x,rows);
     puts("\n\n\n=====================");
     puts("==== M A T R I X ====");
@@ -160,27 +160,16 @@ void SwapA(Matrix* matrix, int n, int unknown){
 
 
 
-
-
-
-
                 for(i=0;i<n;i++){
-                        sum=0;
-                        for(k=0; k<=n;k++){
-                            sum=abs(sum)+matrix->matrix[i][k];
-                            // printf("sum de sum %d\n",sum);
-                        }
-                        if(sum==0){
-                            parameters++;
+                    sum=0;
+                    for(k=0; k<=n;k++){
+                        sum=abs(sum)+matrix->matrix[i][k];
+                    }
+                    if(sum==0){
+                        parameters++;
                             
-                        }
+                    }
                 }
-
-
-
-
-
-
 
 
                 for(i=0;i<n;i++){
@@ -248,6 +237,14 @@ void SwapA(Matrix* matrix, int n, int unknown){
 
 
 }
+
+void SwapB(Matrix* matrix, int n, int unknown){
+    int k=0,random,e=0;
+    float sum;
+    int parameters=0,values=0,r=0,l;
+    srand(time(0));
+}
+
 
 void MatrixFilling(Matrix* matrix, int n, int unknown,int rows){
 
@@ -323,12 +320,8 @@ void MatrixSolution(Matrix* matrix, int n, int unknown){
     for(i=0;i<n;i++){
         sum=0;
         for(k=0; k<n;k++){
-            // printf("\nvalor %f",matrix->matrix[i][k]);
             sum=abs(sum)+matrix->matrix[i][k];
-            // printf("\n\n---%f\n",sum);
         }
-        // printf("\n\nvalor matriz[1][0]=%f , matriz[1][1]=%f ",matrix->matrix[1][0],matrix->matrix[1][1]);
-        // printf("sum=%f, valor de n=%f",sum,matrix->matrix[i][n]);
         if(abs(matrix->matrix[i][n])!=0 && sum==0){
             puts("That matrix has not solutions");
             exit(0);
@@ -339,7 +332,6 @@ void MatrixSolution(Matrix* matrix, int n, int unknown){
             sum=0;
             for(k=0; k<=n;k++){
                 sum=abs(sum)+matrix->matrix[i][k];
-                // printf("sum de sum %d\n",sum);
             }
             if(sum==0){
                 parameters++;
@@ -350,17 +342,11 @@ void MatrixSolution(Matrix* matrix, int n, int unknown){
 
 
 
-
-
-
-
-
-
     for(i=0;i<n;i++){
         sum=0;
         for(k=0; k<=n;k++){
             sum=abs(sum)+matrix->matrix[i][k];
-            // printf("sum de sum %d\n",sum);
+
         }
         if(sum==0){
             printf("That matrix has infinity solutions:\n");                
@@ -384,50 +370,6 @@ void MatrixSolution(Matrix* matrix, int n, int unknown){
                     }
                 }
             }
-
-
-
-
-
-
-
-                ///ayer
-
-
-            // sum=0;
-            // for(k=0; k<n;k++){
-            //                             // printf("\nvalor %f",matrix->matrix[i][k]);
-            //     sum=abs(sum)+matrix->matrix[1][k];
-            //                             // printf("\n\n---%f\n",sum);
-            // }
-            // if(abs(matrix->matrix[1][n])==0 && sum==0){
-            //     puts("epaaa2");
-
-            //     printf("\nX%d= %f", 1,matrix->matrix[0][n]/matrix->matrix[0][0]);
-            //     printf("-%fP%d",matrix->matrix[0][1]/matrix->matrix[0][0],1);
-            //     printf("-%fP%d",matrix->matrix[0][3]/matrix->matrix[0][0],2);
-
-            
-            //     printf("\nX%d= P%d",2,1); 
-
-            //     printf("\nX%d= %f", 3,matrix->matrix[2][n]/matrix->matrix[2][2]);
-            //     printf("-%fP%d",matrix->matrix[0][1]/matrix->matrix[2][2],1);
-            //     printf("-%fP%d",matrix->matrix[2][3]/matrix->matrix[2][2],2);
-
-            
-            //     printf("\nX%d= P%d",4,1); 
-
-
-
-            //     exit(0);  
-
-            // }
-
-
-
-
-
-
 
 
 
