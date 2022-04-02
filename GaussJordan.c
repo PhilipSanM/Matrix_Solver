@@ -37,9 +37,9 @@ void MatrixStarting(Matrix* matrix, int Tam);
 
 void SquareMatrixFilling(Matrix* matrix, int n);
 void SquareAA(Matrix* matrix, int n);
-int SquareDeterminantA(Matrix* matrix, int n);
-void SquareDeterminantAA(Matrix* matrix, int n);
-void SquareInverseA(Matrix* matrix, int n);
+int SquareDeterminantA(Matrix* matrix, int n,float det);
+void SquareDeterminantAA(Matrix* matrix, int n,float det);
+void SquareInverseA(Matrix* matrix,Matrix* matrixInverse, int n);
 void SquareMatrixPrinting(Matrix* matrix, int n);
 void SquareMatrixCopy(Matrix* matrix,Matrix* squareMatrixCopy, int n);
 
@@ -48,9 +48,11 @@ int i,j,k;
 void main(){
     int n,x,rows,option;
     bool flag;
+    float det;
     Matrix matrix;
     Matrix squareMatrix;
     Matrix squareMatrixCopy;
+    Matrix squareMatrixInverse;
  
     do{
     puts("\n\nWich operation dou you want to do?");
@@ -78,7 +80,7 @@ void main(){
         case 2:
             if(flag ){
                 SquareMatrixCopy(&squareMatrix,&squareMatrixCopy,n);
-                SquareDeterminantA(&squareMatrixCopy,n);
+                SquareDeterminantA(&squareMatrixCopy,n,det);
                 SquareMatrixPrinting(&squareMatrixCopy,n);
                 break;
             }else{
@@ -90,7 +92,7 @@ void main(){
 
             if(flag ){
                 SquareMatrixCopy(&squareMatrix,&squareMatrixCopy,n); 
-                SquareDeterminantAA(&squareMatrixCopy,n); 
+                SquareDeterminantAA(&squareMatrixCopy,n,det); 
                 SquareMatrixPrinting(&squareMatrixCopy,n);
                 break;
             }else{
@@ -100,10 +102,16 @@ void main(){
 
         case 4:
             if(flag){
-                SquareMatrixCopy(&squareMatrix,&squareMatrixCopy,n);  
-                SquareInverseA(&squareMatrixCopy,n);
-                SquareMatrixPrinting(&squareMatrixCopy,n);
+                if(det==0){
+                    puts("That matrix has not inverse because the determinant is 0");
+                    break;
+                }else{
+                    SquareMatrixCopy(&squareMatrix,&squareMatrixCopy,n);  
+                    SquareInverseA(&squareMatrix,&squareMatrixInverse,n);
+                    SquareMatrixPrinting(&squareMatrixCopy,n);
                 break;
+
+                }
             }else{
                 puts("First pls insert a matrix Mnxn   ");     
                 break;
@@ -527,10 +535,11 @@ void SquareAA(Matrix* matrix, int n){
 }
 
 
-int SquareDeterminantA(Matrix* matrix, int n){
-    float  ratio, det=1;
+int SquareDeterminantA(Matrix* matrix, int n, float det){
+    float  ratio;
     float sumRow,sumColum,sumRowA;
     int l=0;
+    det=1;
     for(i=0;i<n;i++){
         sumRow=0;
         sumColum=0;
@@ -540,7 +549,8 @@ int SquareDeterminantA(Matrix* matrix, int n){
         }
         if(sumRow==0 || sumColum==0){
             puts("Determinant of given matrix is: 0");
-            return 0;   
+            det=0;
+            return det;   
         }
     }
 
@@ -551,7 +561,7 @@ int SquareDeterminantA(Matrix* matrix, int n){
         for(k=0; k<n;k++){
             sumRow=abs(sumRow)+matrix->matrix[i][k];
         }
-        printf("========%f suma fila %d\n",sumRow, i);
+        // printf("========%f suma fila %d\n",sumRow, i);
         while(l<n){
             sumRowA=0;
             if(i==l){
@@ -561,20 +571,17 @@ int SquareDeterminantA(Matrix* matrix, int n){
             for(k=0; k<n;k++){
                 sumRowA=abs(sumRowA)+matrix->matrix[l][k];
             }
-            printf("========%f suma fila %d\n",sumRowA, l);
+            // printf("========%f suma fila %d\n",sumRowA, l);
 
             if(sumRowA==sumRow){
                 puts("Determinant of given matrix is: 0");
-                puts("absqui entra");
-
-                return 0;   
+                // puts("absqui entra");
+                det=0;
+                return det;   
             }
             l++;
         }
     }
-
-
-
 
     for(i=0;i< n;i++)
     {
@@ -593,21 +600,24 @@ int SquareDeterminantA(Matrix* matrix, int n){
         det = det * matrix->matrix[i][i];
     }
     printf("\n\nDeterminant of given matrix is: %0.3f\n", det);
-    return 0;
+    return det;
 } 
 
 
-void SquareDeterminantAA(Matrix* matrix, int n){
+void SquareDeterminantAA(Matrix* matrix, int n,float det){
     for(i=0; i<=n-1; i++){
         for(j=0; j<=n-1; j++){
             matrix->matrix[i][j]=matrix->matrix[i][j]*matrix->matrix[i][j];
         }
     }
-    SquareDeterminantA(matrix,n);
+    SquareDeterminantA(matrix,n,det);
 }
 
 
-void SquareInverseA(Matrix* matrix, int n){
+void SquareInverseA(Matrix* matrix,Matrix* matrixInverse, int n){
+
+
+
 
 }
 void SquareMatrixPrinting(Matrix* matrix, int n){
