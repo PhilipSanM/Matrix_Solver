@@ -37,8 +37,8 @@ void MatrixStarting(Matrix* matrix, int Tam);
 
 void SquareMatrixFilling(Matrix* matrix, int n);
 void SquareAA(Matrix* matrix, int n);
-void SquareAbsA(Matrix* matrix, int n);
-void SquareAbsAA(Matrix* matrix, int n);
+void SquareDeterminantA(Matrix* matrix, int n);
+void SquareDeterminantAA(Matrix* matrix, int n);
 void SquareInverseA(Matrix* matrix, int n);
 void SquareMatrixPrinting(Matrix* matrix, int n);
 void SquareMatrixCopy(Matrix* matrix,Matrix* squareMatrixCopy, int n);
@@ -55,7 +55,7 @@ void main(){
     Matrix squareMatrixCopy;
  
     do{
-    puts("Wich operation dou you want to do?");
+    puts("\n\nWich operation dou you want to do?");
     puts("1.- A*A");
     puts("2.- |A|");
     puts("3.- |A*A|");
@@ -80,7 +80,7 @@ void main(){
         case 2:
             if(flag ){
                 SquareMatrixCopy(&squareMatrix,&squareMatrixCopy,n);
-                SquareAbsA(&squareMatrixCopy,n);
+                SquareDeterminantA(&squareMatrixCopy,n);
                 SquareMatrixPrinting(&squareMatrixCopy,n);
                 break;
             }else{
@@ -92,7 +92,7 @@ void main(){
 
             if(flag ){
                 SquareMatrixCopy(&squareMatrix,&squareMatrixCopy,n); 
-                SquareAbsAA(&squareMatrixCopy,n); 
+                SquareDeterminantAA(&squareMatrixCopy,n); 
                 SquareMatrixPrinting(&squareMatrixCopy,n);
                 break;
             }else{
@@ -529,27 +529,46 @@ void SquareAA(Matrix* matrix, int n){
 }
 
 
-void SquareAbsA(Matrix* matrix, int n){
-    for(i=0; i<=n-1; i++){
-        for(j=0; j<=n-1; j++){
-            matrix->matrix[i][j]=abs(matrix->matrix[i][j]);
+void SquareDeterminantA(Matrix* matrix, int n){
+    float  ratio, det=1;
+
+    for(i=0;i< n;i++)
+    {
+        for(j=i+1;j< n;j++)
+        {
+            ratio = matrix->matrix[j][i]/matrix->matrix[i][i];
+
+            for(k=0;k< n;k++)
+            {
+                matrix->matrix[j][k] = matrix->matrix[j][k] - ratio*matrix->matrix[i][k];
+            }
         }
     }
+         for(i=0;i< n;i++)
+     {
+          for(j=0;j< n;j++)
+          {
+               printf("%0.2f\t",matrix->matrix[i][j]);
+          }
+          printf("\n");
+     }
+    for(i=0;i< n;i++)
+    {
+        det = det * matrix->matrix[i][i];
+    }
+    printf("\n\nDeterminant of given matrix is: %0.3f\n", det);
 } 
 
 
-void SquareAbsAA(Matrix* matrix, int n){
+void SquareDeterminantAA(Matrix* matrix, int n){
 
     for(i=0; i<=n-1; i++){
         for(j=0; j<=n-1; j++){
             matrix->matrix[i][j]=matrix->matrix[i][j]*matrix->matrix[i][j];
         }
     }
-    for(i=0; i<=n-1; i++){
-        for(j=0; j<=n-1; j++){
-            matrix->matrix[i][j]=abs(matrix->matrix[i][j]);
-        }
-    } 
+    SquareDeterminantA(matrix,n);
+     
 }
 
 
