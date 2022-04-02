@@ -49,15 +49,13 @@ void main(){
     int n,x,rows,option;
     bool flag;
     Matrix matrix;
-
-
     Matrix squareMatrix;
     Matrix squareMatrixCopy;
  
     do{
     puts("\n\nWich operation dou you want to do?");
     puts("1.- A*A");
-    puts("2.- |A|");
+    puts("2.- |A|cd");
     puts("3.- |A*A|");
     puts("4.- Find A^-1");
     puts("5.- Insert a new square matrix");
