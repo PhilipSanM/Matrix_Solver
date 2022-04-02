@@ -49,47 +49,11 @@ void main(){
     int n,x,rows,option;
     bool flag;
     Matrix matrix;
-    MatrixStarting(&matrix,TAM);
-    puts("\n\n\n=============================================");
-    puts("============ M A T R I X 'I N A T O R =======");
-    puts("=============================================\n\n\n");
-    fflush(stdin);
-    puts("This program solves a Matrix mxn, using the GaussJordan method, and writes it's solutions");
-    printf("\nInsert the number of equations: ");
-    fflush(stdin);
-    scanf("%d",&n);
-
-    printf("\nInsert the number of variables: ");
-    scanf("%d",&x);
-    rows=n;
-    if(n<x){
-        rows=x;
-    }
-
-    MatrixFilling(&matrix,n,x,rows);
-    puts("\n\n\n=====================");
-    puts("==== M A T R I X ====");
-    puts("=====================\n\n");
-    MatrixPrinting(&matrix,n,x);
-
-    SwapA(&matrix,rows,x);
-    MatrixPrinting(&matrix,n,x);
-
-    OperacionGauss(&matrix,rows);
-    puts("\n\n\n================================");
-    puts("==== G A U S S  J O R D A N ====");
-    puts("================================\n\n\n");
-    MatrixPrinting(&matrix,n,x);
-    MatrixSolution(&matrix,rows,x);
 
 
-    puts("Pls insert a square Matrix ");
-    printf("\nInsert the number of n for a matrix Mnxn: ");
-    fflush(stdin);
-    scanf("%d",&n);
     Matrix squareMatrix;
     Matrix squareMatrixCopy;
-    SquareMatrixFilling(&squareMatrix,n);
+ 
     do{
     puts("Wich operation dou you want to do?");
     puts("1.- A*A");
@@ -97,43 +61,100 @@ void main(){
     puts("3.- |A*A|");
     puts("4.- Find A^-1");
     puts("5.- Insert a new square matrix");
-    puts("6.- Get out of the program");
+    puts("6.- Solve a mayrix Mmxn");
+    puts("7.- Get out of the program");
     fflush(stdin);
     scanf("%d", &option);
     switch(option){
         case 1:
-            SquareMatrixCopy(&squareMatrix,&squareMatrixCopy,n);
-            SquareAA(&squareMatrixCopy,n);
-
-            SquareMatrixPrinting(&squareMatrixCopy,n);
+            if(flag){
+                SquareMatrixCopy(&squareMatrix,&squareMatrixCopy,n);
+                SquareAA(&squareMatrixCopy,n);
+                SquareMatrixPrinting(&squareMatrixCopy,n);
+                break;
+            }else{
+                puts("First pls insert a matrix Mnxn   ");
             break;
+            }
+
         case 2:
-            SquareMatrixCopy(&squareMatrix,&squareMatrixCopy,n);
-            SquareAbsA(&squareMatrixCopy,n);
-
-            SquareMatrixPrinting(&squareMatrixCopy,n);
-            break;
+            if(flag ){
+                SquareMatrixCopy(&squareMatrix,&squareMatrixCopy,n);
+                SquareAbsA(&squareMatrixCopy,n);
+                SquareMatrixPrinting(&squareMatrixCopy,n);
+                break;
+            }else{
+                puts("First pls insert a matrix Mnxn   ");     
+                break;
+            }
         case 3:
-            SquareMatrixCopy(&squareMatrix,&squareMatrixCopy,n); 
-            SquareAbsAA(&squareMatrixCopy,n); 
 
-            SquareMatrixPrinting(&squareMatrixCopy,n);
-            break;
+
+            if(flag ){
+                SquareMatrixCopy(&squareMatrix,&squareMatrixCopy,n); 
+                SquareAbsAA(&squareMatrixCopy,n); 
+                SquareMatrixPrinting(&squareMatrixCopy,n);
+                break;
+            }else{
+                puts("First pls insert a matrix Mnxn   ");     
+                break;
+            }
+
         case 4:
+            if(flag){
+                SquareMatrixCopy(&squareMatrix,&squareMatrixCopy,n);  
+                SquareInverseA(&squareMatrixCopy,n);
+                SquareMatrixPrinting(&squareMatrixCopy,n);
+                break;
+            }else{
+                puts("First pls insert a matrix Mnxn   ");     
+                break;
+            }
 
-            SquareMatrixCopy(&squareMatrix,&squareMatrixCopy,n);  
-            SquareInverseA(&squareMatrixCopy,n);
-            SquareMatrixPrinting(&squareMatrixCopy,n);
-            break;
         case 5:
             printf("\nInsert the number of n for a matrix Mnxn: ");
             fflush(stdin);
             scanf("%d",&n);
-            Matrix squareMatrix;
             SquareMatrixFilling(&squareMatrix,n);
             SquareMatrixPrinting(&squareMatrix,n);
+            flag=true;
             break;
         case 6:
+            puts("Nice option for today");
+            MatrixStarting(&matrix,TAM);
+            puts("\n\n\n=============================================");
+            puts("============ M A T R I X 'I N A T O R =======");
+            puts("=============================================\n\n\n");
+            fflush(stdin);
+            puts("This program solves a Matrix mxn, using the GaussJordan method, and writes it's solutions");
+            printf("\nInsert the number of equations: ");
+            fflush(stdin);
+            scanf("%d",&n);
+
+            printf("\nInsert the number of variables: ");
+            scanf("%d",&x);
+            rows=n;
+            if(n<x){
+                rows=x;
+            }
+
+            MatrixFilling(&matrix,n,x,rows);
+            puts("\n\n\n=====================");
+            puts("==== M A T R I X ====");
+            puts("=====================\n\n");
+            MatrixPrinting(&matrix,n,x);
+
+            SwapA(&matrix,rows,x);
+            MatrixPrinting(&matrix,n,x);
+
+            OperacionGauss(&matrix,rows);
+            puts("\n\n\n================================");
+            puts("==== G A U S S  J O R D A N ====");
+            puts("================================\n\n\n");
+            MatrixPrinting(&matrix,n,x);
+            MatrixSolution(&matrix,rows,x);
+            break;
+        case 7:
             puts("Have a nice day :)");
             exit(0);
             break;
@@ -482,7 +503,7 @@ void MatrixSolution(Matrix* matrix, int n, int unknown){
 void SquareMatrixFilling(Matrix* matrix, int n){
     for(i=0; i<=n-1; i++){
         printf("\nFor the equation %d: \n",i+1);
-        for(j=0; j<n-1; j++){
+        for(j=0; j<=n-1; j++){
             fflush(stdin);
             printf("x%d= ",j+1);
             scanf("%f",&matrix->matrix[i][j]);
@@ -490,18 +511,19 @@ void SquareMatrixFilling(Matrix* matrix, int n){
         }
     }    
 }
+
 void SquareMatrixCopy(Matrix* matrix,Matrix* squareMatrixCopy, int n){
     for(i=0; i<=n-1; i++){
-        for(j=0; j<n-1; j++){
-            SquareMatrixCopy->matrix[i][j]=matrix->matrix[i][j];
+        for(j=0; j<=n-1; j++){
+            squareMatrixCopy->matrix[i][j]=matrix->matrix[i][j];
         }
     } 
 }
 
 void SquareAA(Matrix* matrix, int n){
     for(i=0; i<=n-1; i++){
-        for(j=0; j<n-1; j++){
-            SquareMatrixCopy->matrix[i][j]=SquareMatrixCopy->matrix[i][j]*SquareMatrixCopy->matrix[i][j];
+        for(j=0; j<=n-1; j++){
+            matrix->matrix[i][j]=matrix->matrix[i][j]*matrix->matrix[i][j];
         }
     } 
 }
@@ -509,8 +531,8 @@ void SquareAA(Matrix* matrix, int n){
 
 void SquareAbsA(Matrix* matrix, int n){
     for(i=0; i<=n-1; i++){
-        for(j=0; j<n-1; j++){
-            SquareMatrixCopy->matrix[i][j]=SquareMatrixCopy->matrix[i][j]*(-1);
+        for(j=0; j<=n-1; j++){
+            matrix->matrix[i][j]=abs(matrix->matrix[i][j]);
         }
     }
 } 
@@ -519,19 +541,21 @@ void SquareAbsA(Matrix* matrix, int n){
 void SquareAbsAA(Matrix* matrix, int n){
 
     for(i=0; i<=n-1; i++){
-        for(j=0; j<n-1; j++){
-            SquareMatrixCopy->matrix[i][j]=SquareMatrixCopy->matrix[i][j]*SquareMatrixCopy->matrix[i][j];
+        for(j=0; j<=n-1; j++){
+            matrix->matrix[i][j]=matrix->matrix[i][j]*matrix->matrix[i][j];
         }
     }
     for(i=0; i<=n-1; i++){
-        for(j=0; j<n-1; j++){
-            SquareMatrixCopy->matrix[i][j]=SquareMatrixCopy->matrix[i][j]*(-1);
+        for(j=0; j<=n-1; j++){
+            matrix->matrix[i][j]=abs(matrix->matrix[i][j]);
         }
     } 
 }
 
 
-void SquareInverseA(Matrix* matrix, int n);
+void SquareInverseA(Matrix* matrix, int n){
+
+}
 void SquareMatrixPrinting(Matrix* matrix, int n){
    for(i=0;i<=n-1;i++){
         printf("\n");
