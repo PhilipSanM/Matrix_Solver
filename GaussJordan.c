@@ -37,7 +37,7 @@ void MatrixStarting(Matrix* matrix, int Tam);
 
 void SquareMatrixFilling(Matrix* matrix, int n);
 void SquareAA(Matrix* matrix, int n);
-void SquareDeterminantA(Matrix* matrix, int n);
+int SquareDeterminantA(Matrix* matrix, int n);
 void SquareDeterminantAA(Matrix* matrix, int n);
 void SquareInverseA(Matrix* matrix, int n);
 void SquareMatrixPrinting(Matrix* matrix, int n);
@@ -55,7 +55,7 @@ void main(){
     do{
     puts("\n\nWich operation dou you want to do?");
     puts("1.- A*A");
-    puts("2.- |A|cd");
+    puts("2.- |A|");
     puts("3.- |A*A|");
     puts("4.- Find A^-1");
     puts("5.- Insert a new square matrix");
@@ -527,8 +527,54 @@ void SquareAA(Matrix* matrix, int n){
 }
 
 
-void SquareDeterminantA(Matrix* matrix, int n){
+int SquareDeterminantA(Matrix* matrix, int n){
     float  ratio, det=1;
+    float sumRow,sumColum,sumRowA;
+    int l=0;
+    for(i=0;i<n;i++){
+        sumRow=0;
+        sumColum=0;
+        for(k=0; k<n;k++){
+            sumRow=abs(sumRow)+matrix->matrix[i][k];
+            sumColum=abs(sumColum)+matrix->matrix[k][i];
+        }
+        if(sumRow==0 || sumColum==0){
+            puts("Determinant of given matrix is: 0");
+            return 0;   
+        }
+    }
+
+    for(i=0;i<n;i++){
+        sumRow=0;
+        sumRowA=0;
+        l=0;
+        for(k=0; k<n;k++){
+            sumRow=abs(sumRow)+matrix->matrix[i][k];
+        }
+        printf("========%f suma fila %d\n",sumRow, i);
+        while(l<n){
+            sumRowA=0;
+            if(i==l){
+                l++;
+            }
+
+            for(k=0; k<n;k++){
+                sumRowA=abs(sumRowA)+matrix->matrix[l][k];
+            }
+            printf("========%f suma fila %d\n",sumRowA, l);
+
+            if(sumRowA==sumRow){
+                puts("Determinant of given matrix is: 0");
+                puts("absqui entra");
+
+                return 0;   
+            }
+            l++;
+        }
+    }
+
+
+
 
     for(i=0;i< n;i++)
     {
@@ -542,31 +588,22 @@ void SquareDeterminantA(Matrix* matrix, int n){
             }
         }
     }
-         for(i=0;i< n;i++)
-     {
-          for(j=0;j< n;j++)
-          {
-               printf("%0.2f\t",matrix->matrix[i][j]);
-          }
-          printf("\n");
-     }
     for(i=0;i< n;i++)
     {
         det = det * matrix->matrix[i][i];
     }
     printf("\n\nDeterminant of given matrix is: %0.3f\n", det);
+    return 0;
 } 
 
 
 void SquareDeterminantAA(Matrix* matrix, int n){
-
     for(i=0; i<=n-1; i++){
         for(j=0; j<=n-1; j++){
             matrix->matrix[i][j]=matrix->matrix[i][j]*matrix->matrix[i][j];
         }
     }
     SquareDeterminantA(matrix,n);
-     
 }
 
 
