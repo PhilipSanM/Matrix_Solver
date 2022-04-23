@@ -31,6 +31,7 @@ bool flagTGmain;
 bool flagTG;
 bool flagLI;
 float data[90];
+float dataInf[90];
 
 void LinearCombination(Matrix* matrix);
 void TermGenerato(Matrix* matrix);
@@ -39,10 +40,10 @@ void Basis(Matrix* matrix);
 
 //Fro GaussJordan Program
 void MatrixStarting(Matrix* matrix, int Tam);
-void OperacionGauss(Matrix* matrix, int n);
+void OperacionGauss(Matrix* matrix, int n, Matrix* matrixEqua, int vectorsNumber);
 void MatrixPrinting(Matrix* matrix, int rows, int columns);
 void MatrixSolutionLC(Matrix* matrix, int n,int unknown);
-void MatrixSolutionTG(Matrix* matrix, int n,int unknown);
+void MatrixSolutionTG(Matrix* matrix, int n,int unknown, Matrix* matrixEqua);
 
 void main(int argc, char const *argv[]){
     int option;
@@ -96,6 +97,7 @@ void main(int argc, char const *argv[]){
 }
 
 void LinearCombination(Matrix* matrix){
+    Matrix matrixEqua;
     int aux,h=0,dataAux;
     puts("\n\n\n=============================================");
     puts("============ LINEAR COMBINATION =======");
@@ -132,7 +134,7 @@ void LinearCombination(Matrix* matrix){
     }
 
     if(R==vectorsNumber){
-        OperacionGauss(matrix, R);
+        OperacionGauss(matrix, R, &matrixEqua, vectorsNumber);
         MatrixSolutionLC(matrix,R,vectorsNumber);
 
         if(flag){
@@ -166,11 +168,6 @@ void LinearCombination(Matrix* matrix){
             printf("\n\n");
 
         }
-
-
-
-
-
     }else{
         puts("THAT'S NOT A LINEAR COMBINATION OF U");
         puts("So, it doesn't belong to U");
@@ -182,8 +179,7 @@ void LinearCombination(Matrix* matrix){
 }
 
 void TermGenerato(Matrix* matrix){
-
-    float data[90];
+    Matrix matrixEqua;
     int aux,h=0,dataAux;
     puts("\n\n\n=============================================");
     puts("============ TERM GENERATOR =======");
@@ -198,15 +194,19 @@ void TermGenerato(Matrix* matrix){
     scanf("%d",&vectorsNumber);
     printf("\n\n");
     k=0;
+    //Init of the new Matrix
+    for(i=0; i<=TAM-1; i++){
+        for(j=0; j<=TAM; j++)
+        {
+            matrix.matrixEqua[i][j]=1;
+        }
+    }
+
     puts("**LET'S  START**");
-    puts("-Insert the space of U");    
-    // for(i=0; i<R; i++){
-    //     printf("Insert the data for the number #%d\n",i+1);
-    //     fflush(stdin);
-    //     scanf("%f",&matrix->matrix[i][vectorsNumber]);
-    //     data[k]=matrix->matrix[i][vectorsNumber];
-    //     k++;
-    // }
+    //The last Column  
+    for(i=0; i<R; i++){
+        matrix->matrix[i][vectorsNumber]=1;
+    }
     puts("-Insert the Vectors");    
     for(i=0; i<vectorsNumber; i++){
         printf("\nFor the vector # %d: \n",i+1);
@@ -219,6 +219,8 @@ void TermGenerato(Matrix* matrix){
         }
     }
 
+    OperacionGauss(matrix, R, &matrixEqua);
+    MatrixSolutionTG(matrix,R,vectorsNumber, &matrixEqua);
     if(R>vectorsNumber){
         puts("THAT'S NOT A SET GENERATOR");
 
@@ -247,7 +249,7 @@ void Basis(Matrix* matrix){
 
 
 
-void OperacionGauss(Matrix* matrix, int n){
+void OperacionGauss(Matrix* matrix, int n, Matrix* matrixEqua, int vectorsNumber){
     Matrix constante;
     for(j=0;j<n;j++){
         for(i=0; i<n; i++){
@@ -257,11 +259,12 @@ void OperacionGauss(Matrix* matrix, int n){
                 //     constante.matrix[0][0]=0;
                 // else
                     constante.matrix[0][0]=matrix->matrix[i][j]/matrix->matrix[j][j];
-                for(k=0; k<=n; k++)
+                for(k=0; k<=vectorsNumber; k++)
                 {
                     matrix->matrix[i][k]=matrix->matrix[i][k]-constante.matrix[0][0]*matrix->matrix[j][k];
 
                 }
+                matrixEqua->matrix[i][]=matrix->matrix[i][k];
 
             }
         }
@@ -342,7 +345,7 @@ void MatrixSolutionLC(Matrix* matrix, int n, int unknown){
 
 
 
-void MatrixSolutionTG(Matrix* matrix, int n, int unknown){
+void MatrixSolutionTG(Matrix* matrix, int n, int unknown, Matrix* matrixEqua){
     float sum,sumA;
     int parameters=0,values=0,r=0,l;
 
@@ -350,24 +353,43 @@ void MatrixSolutionTG(Matrix* matrix, int n, int unknown){
 
     for(i=0;i<n;i++){
         sum=0;
-        for(k=0; k<n;k++){
+        for(k=0; k<unknown;k++){
             sum=abs(sum)+matrix->matrix[i][k];
             sumA=sumA+matrix->matrix[i][k];
-
         }
-        if(sum==0 && sumA==0){
+        if(sum==0 && sumA==0 && matrix->matrix[i][unknown]!=0){
             //There is no solution to the matrix
             flagTGmain=true;
         }
     }
 
+    for(i=0;i<n;i++){
+            sum=0;
+            for(k=0; k<=unknown;k++){
+                sum=abs(sum)+matrix->matrix[i][k];
+        }
+        if(sum==0){
+            parameters++;
+                
+        }
+    }
+
     if(flag){
-        puts("THAT'S NOT A T");
-        puts("So, it doesn't belong to U");
+        puts("THAT'S NOT A SET GENERATOR");
+        
     }else{
         printf("\n\n");
-        puts("THAT'S A LINEAR COMBINATION OF U");
-        puts("So, it belong to U");
+        puts("THAT'S A SET GENERATOR");
+        if(parameters==0){
+            //Unic Solution
+
+        }else{
+            //Inf solutions
+
+
+        }
+
+
         printf("\n");
     }
 
