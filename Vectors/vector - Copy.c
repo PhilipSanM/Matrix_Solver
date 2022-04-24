@@ -28,8 +28,7 @@ typedef struct{
 int i,j,k,w,R,l,vectorsNumber;
 bool flag;
 bool flagTGmain;
-bool flagBTG;
-bool flagBLI;
+bool flagTG;
 bool flagLI;
 
 float dataInf[90];
@@ -38,14 +37,14 @@ void LinearCombination(Matrix* matrix);
 void TermGenerato(Matrix* matrix);
 void LinearIndependence(Matrix* matrix);
 void Basis(Matrix* matrix);
-void swap(Matrix* matrix,int aux);
+
 //Fro GaussJordan Program
 void MatrixStarting(Matrix* matrix, int Tam);
 void OperacionGauss(Matrix* matrix, int n, Matrix* matrixEqua, int vectorsNumber);
 void MatrixPrinting(Matrix* matrix, int rows, int columns);
 void MatrixSolutionLC(Matrix* matrix, int n,int unknown);
 void MatrixSolutionTG(Matrix* matrix, int n,int unknown, Matrix* matrixEqua);
-void OperacionGaussLinealIndependenci(Matrix* matrix, int n, Matrix* matrixEqua, int vectorsNumber);
+
 void main(int argc, char const *argv[]){
     int option;
     Matrix matrix;
@@ -57,8 +56,7 @@ void main(int argc, char const *argv[]){
         MatrixStarting(&matrix,TAM);
         flag=false;
         flagTGmain=false;
-        flagBTG=false;
-        flagBLI=false;
+        flagTG=false;
         flagLI=false;
         puts("What do U wanna do?");
         puts("1.- Play with Linear Combinations.");
@@ -187,7 +185,7 @@ void TermGenerato(Matrix* matrix){
     Matrix matrixConstant;
     float sum,sumA;
     int parameters=0,auxRows=0, unknown=0, cursorUnknon=0, auxUnknown=0;
-    int aux=0,h=0,dataAux,u=0;
+    int aux=0,h=0,dataAux;
     puts("\n\n\n=============================================");
     puts("============ TERM GENERATOR =======");
     puts("=============================================\n\n\n");
@@ -262,9 +260,7 @@ void TermGenerato(Matrix* matrix){
         
         }else{
             printf("\n\n");
-            // puts("Aqui pasa calabaza");
             puts("THAT'S A SET GENERATOR");
-            flagBTG=true;
             if(parameters==0){
                 //Unic Solution
                 // for(i=0;i<R;i++){ 
@@ -310,140 +306,26 @@ void TermGenerato(Matrix* matrix){
                 printf("\n\n");
     
             }else{
-
-                //THIS IS THE COPY
-
-                unknown=vectorsNumber-R;
-
-                // puts("aCA DESPUES");
-
-                puts("It has infninity solutions So:");
-                OperacionGauss(matrix, R, &matrixEqua, vectorsNumber);
-                MatrixSolutionTG(matrix,R,vectorsNumber, &matrixEqua);
-
-                for(i=0;i<R;i++){
-                    matrixConstant.matrix[0][0]=matrix->matrix[i][i];
-                    for(l=0;l<=vectorsNumber;l++){
-                        matrix->matrix[i][l]=matrix->matrix[i][l]/matrixConstant.matrix[0][0];
-                    }
-                    for(w=0;w<R;w++){
-                        matrixEqua.matrix[i][w]=matrixEqua.matrix[i][w]/matrixConstant.matrix[0][0];
-                    } 
-
-                }
-
-
-                printf("\n(");
-                for(i=0; i<R;i++){
-                    printf("X%d",i+1);
-                    if(i<R-1)
-                        printf(",");
-                }
-
-                printf(")=");
-                auxUnknown=0;
-                u=unknown;
-
-                for(i=0; i<vectorsNumber;i++){
-
-                    if(auxUnknown<R){
-                        printf("+(");
-                        for(w=0;w<R;w++){
-                            matrixEqua.matrix[auxRows][w]=matrixEqua.matrix[auxRows][w]/matrix->matrix[i][i];
-                            printf("+%fY%d",matrixEqua.matrix[auxRows][w],w+1);
-                        }
-                        cursorUnknon=vectorsNumber;
-                        for(w=0;w<unknown;w++){
-                            cursorUnknon--;
-                            printf("-%fP%d",matrix->matrix[i][cursorUnknon],w+1);
-                
-                        }
-
-                        printf(")");
-                        auxRows++;
-                        printf("(");
-                        h=0;
-                        for(aux=0;aux<vectorsNumber;aux++){
-
-                            printf("%0.2f",data[dataAux]);
-                            dataAux++;
-                            h++;
-                            if(h<R){
-                                printf(",");
-                    
-                            }else{
-                                break;
-                            }
-
-                        }
-                        printf(")");
-
-                        auxUnknown++;
-
-
-                    }else{
-                        // puts("====ENTRO==")
-                        printf("+(");
-                        printf("P%d",u);
-                        u--;
-
-
-                        printf(")");
-                        auxRows++;
-                        printf("(");
-                        h=0;
-                        for(aux=0;aux<vectorsNumber;aux++){
-
-                            printf("%0.2f",data[dataAux]);
-                            dataAux++;
-                            h++;
-                            if(h<R){
-                                printf(",");
-                    
-                            }else{
-                                break;
-                            }
-
-                        }
-                        printf(")");
-
-                        auxUnknown++;
-
-                    }
-                }
-                printf("\n\n");
+            //Inf solutions
+                // puts("It has infninity solutions So:");
             }
-        }
 
+
+
+        }
     }else if(vectorsNumber>R){
+
+
 
         //Infinity solutions
         unknown=vectorsNumber-R;
-        // printf("XXXDDDD incognitas = %d",unknown);
-        puts("THAT'S  A SET GENERATOR");
-        flagBTG=true;
+        printf("XXXDDDD incognitas = %d",unknown);
 
         puts("It has infninity solutions So:");
         OperacionGauss(matrix, R, &matrixEqua, vectorsNumber);
         MatrixSolutionTG(matrix,R,vectorsNumber, &matrixEqua);
-        // MatrixPrinting(matrix, R, vectorsNumber);
-        // puts("Making 1\not");
-        for(i=0;i<R;i++){
-            matrixConstant.matrix[0][0]=matrix->matrix[i][i];
-            for(l=0;l<=vectorsNumber;l++){
-                matrix->matrix[i][l]=matrix->matrix[i][l]/matrixConstant.matrix[0][0];
-            }
-            for(w=0;w<R;w++){
-                matrixEqua.matrix[i][w]=matrixEqua.matrix[i][w]/matrixConstant.matrix[0][0];
-            } 
+        MatrixPrinting(matrix, R, vectorsNumber);
 
-        }
-
-
-
-
-        // MatrixPrinting(matrix, R, vectorsNumber);
-        // puts("Making the rest\not");
 
 
         printf("\n(");
@@ -454,78 +336,64 @@ void TermGenerato(Matrix* matrix){
         }
 
         printf(")=");
-        auxUnknown=0;
-        u=unknown;
+        for(i=0; i<R;i++){
+            auxUnknown=vectorsNumber-1;
 
-        for(i=0; i<vectorsNumber;i++){
-
-            if(auxUnknown<R){
-                printf("+(");
-                for(w=0;w<R;w++){
-                    matrixEqua.matrix[auxRows][w]=matrixEqua.matrix[auxRows][w]/matrix->matrix[i][i];
-                    printf("+%fY%d",matrixEqua.matrix[auxRows][w],w+1);
-                }
-                cursorUnknon=vectorsNumber;
-                for(w=0;w<unknown;w++){
-                    cursorUnknon--;
-                    printf("-%fP%d",matrix->matrix[i][cursorUnknon],w+1);
-                
-                }
-
-                printf(")");
-                auxRows++;
-                printf("(");
-                h=0;
-                for(aux=0;aux<vectorsNumber;aux++){
-
-                    printf("%0.2f",data[dataAux]);
-                    dataAux++;
-                    h++;
-                    if(h<R){
-                        printf(",");
-                    
-                    }else{
-                        break;
-                    }
-
-                }
-                printf(")");
-
-                auxUnknown++;
-
-
-            }else{
-                // puts("====ENTRO==")
-                printf("+(");
-                printf("P%d",u);
-                u--;
-
-
-                printf(")");
-                auxRows++;
-                printf("(");
-                h=0;
-                for(aux=0;aux<vectorsNumber;aux++){
-
-                    printf("%0.2f",data[dataAux]);
-                    dataAux++;
-                    h++;
-                    if(h<R){
-                        printf(",");
-                    
-                    }else{
-                        break;
-                    }
-
-                }
-                printf(")");
-
-                auxUnknown++;
-
-            }
 
 //AQUI VOY
+            printf("+(");
+            for(w=0;w<R;w++){
+                matrixEqua.matrix[auxRows][w]=matrixEqua.matrix[auxRows][w]/matrix->matrix[i][i];
+                printf("+%fY%d",matrixEqua.matrix[auxRows][w],w+1);
+            }
 
+
+            //PRINTING PARAMETERS
+            
+            // puts("IMPRESION PARAMETORS");
+            // printf("++++%d++++",vectorsNumber);
+            matrixConstant.matrix[0][0]=matrix->matrix[i][i];
+            
+            for(l=0;l<=vectorsNumber;l++){
+                matrix->matrix[i][l]=matrix->matrix[i][l]/matrixConstant.matrix[0][0];
+            } 
+
+            // printf("\n\n\n");
+            MatrixPrinting(matrix, R, vectorsNumber);
+
+
+
+//PARAMS
+
+            cursorUnknon=unknown-1;
+            printf("+++valor del cursror: %d",cursorUnknon);
+            for(w=0;w<unknown;w++){
+                printf("+%fP%d",matrix->matrix[i][cursorUnknon],w+1);
+                printf("Valor de w=%d\n",w);
+                cursorUnknon++;
+            }
+
+
+
+
+            printf(")");
+            auxRows++;
+            printf("(");
+            h=0;
+            for(aux=0;aux<vectorsNumber;aux++){
+
+                printf("%0.2f",data[dataAux]);
+                dataAux++;
+                h++;
+                if(h<R){
+                    printf(",");
+                    
+                }else{
+                    break;
+                }
+
+            }
+            printf(")");
 
         }
     printf("\n\n");
@@ -539,59 +407,6 @@ void TermGenerato(Matrix* matrix){
 
 
 void LinearIndependence(Matrix* matrix){
-    Matrix matrixEqua;
-    int sum,sumA;
-    int conLiInd=0,n,thereIs0=0;
-    puts("\n\n\n=============================================");
-    puts("============ LINEAR INDEPENDECE =======");
-    puts("=============================================\n\n\n");
-    puts("Insert the dimension of R:");
-    fflush(stdin);
-    scanf("%d",&R);
-    printf("\n\n");
-    puts("Insert the number of Vectors:");
-    fflush(stdin);
-    scanf("%d",&vectorsNumber);
-    printf("\n\n");
-    //Init of the new Matrix
-    MatrixStarting(matrix,TAM);
-
-    puts("**LET'S  START**");
-    puts("-Insert the Vectors");    
-    for(i=0; i<vectorsNumber; i++){
-        printf("\nFor the vector # %d: \n",i+1);
-        for(j=0; j<R; j++){
-            printf("Insert the data of the number #%d\n",j+1);
-            fflush(stdin);
-            scanf("%f",&matrix->matrix[j][i]);
-        }
-    }
-    MatrixPrinting(matrix, R, vectorsNumber);
-    OperacionGaussLinealIndependenci(matrix, R, &matrixEqua, vectorsNumber);
-    MatrixPrinting(matrix, R, vectorsNumber);
-
-    for(i=0;i<R;i++){
-        sum=0;
-        sumA=0;
-        for(k=0; k<vectorsNumber;k++){
-            sum=abs(sum)+matrix->matrix[i][k];
-            sumA=sumA+matrix->matrix[i][k];
-        }
-        if(sum!=0 ){
-            //sumA!=0
-            conLiInd++;
-        }
-        
-    }   
-
-    if(conLiInd==vectorsNumber){
-        puts("THAT SET IS LINEAR INDEPENDECE");
-        printf("Because #Unknowns=%d=A*=%d",conLiInd,vectorsNumber);
-    }else{
-        puts("THAT SET IS NOT LINEAR INDEPENDECE");
-        printf("Because #Unknowns=%d is different from A*=%d\n\n",vectorsNumber,conLiInd);
-    }
-
 
 }
 void Basis(Matrix* matrix){
@@ -635,7 +450,114 @@ void OperacionGauss(Matrix* matrix, int n, Matrix* matrixEqua, int vectorsNumber
 
                 }
 
+                //Switch Case to make the x,y,z values, that's manual and suck :(
+                // switch(j){
+                //     case 0:
+                //         matrixEqua->matrix[w][0]=matrixEqua->matrix[w][0]-constante.matrix[0][0]*matrixEqua->matrix[j][0];
+
+                //         break;
+                //     case 1:
+                //         matrixEqua->matrix[w][0]=matrixEqua->matrix[w][0]-constante.matrix[0][0]*matrixEqua->matrix[j][0];
+                //         matrixEqua->matrix[w][1]=matrixEqua->matrix[w][1]-constante.matrix[0][0]*matrixEqua->matrix[j][1];
+
+                //         break;
+                //     case 2:
+                //         matrixEqua->matrix[w][0]=matrixEqua->matrix[w][0]-constante.matrix[0][0]*matrixEqua->matrix[j][0];
+                //         matrixEqua->matrix[w][1]=matrixEqua->matrix[w][1]-constante.matrix[0][0]*matrixEqua->matrix[j][1];
+                //         matrixEqua->matrix[w][2]=matrixEqua->matrix[w][2]-constante.matrix[0][0]*matrixEqua->matrix[j][2];
+
+                //         break;
+                //     case 3:
+                //         matrixEqua->matrix[w][0]=matrixEqua->matrix[w][0]-constante.matrix[0][0]*matrixEqua->matrix[j][0];
+                //         matrixEqua->matrix[w][1]=matrixEqua->matrix[w][1]-constante.matrix[0][0]*matrixEqua->matrix[j][1];
+                //         matrixEqua->matrix[w][2]=matrixEqua->matrix[w][2]-constante.matrix[0][0]*matrixEqua->matrix[j][2];
+                //         matrixEqua->matrix[w][3]=matrixEqua->matrix[w][3]-constante.matrix[0][0]*matrixEqua->matrix[j][3];
+
+                //         break;
+                //     case 4:
+                //         matrixEqua->matrix[w][0]=matrixEqua->matrix[w][0]-constante.matrix[0][0]*matrixEqua->matrix[j][0];
+                //         matrixEqua->matrix[w][1]=matrixEqua->matrix[w][1]-constante.matrix[0][0]*matrixEqua->matrix[j][1];
+                //         matrixEqua->matrix[w][2]=matrixEqua->matrix[w][2]-constante.matrix[0][0]*matrixEqua->matrix[j][2];
+                //         matrixEqua->matrix[w][3]=matrixEqua->matrix[w][3]-constante.matrix[0][0]*matrixEqua->matrix[j][3];
+                //         matrixEqua->matrix[w][4]=matrixEqua->matrix[w][4]-constante.matrix[0][0]*matrixEqua->matrix[j][4];
+
+                //         break;
+                //     case 5:
+                //         matrixEqua->matrix[w][0]=matrixEqua->matrix[w][0]-constante.matrix[0][0]*matrixEqua->matrix[j][0];
+                //         matrixEqua->matrix[w][1]=matrixEqua->matrix[w][1]-constante.matrix[0][0]*matrixEqua->matrix[j][1];
+                //         matrixEqua->matrix[w][2]=matrixEqua->matrix[w][2]-constante.matrix[0][0]*matrixEqua->matrix[j][2];
+                //         matrixEqua->matrix[w][3]=matrixEqua->matrix[w][3]-constante.matrix[0][0]*matrixEqua->matrix[j][3];
+                //         matrixEqua->matrix[w][4]=matrixEqua->matrix[w][4]-constante.matrix[0][0]*matrixEqua->matrix[j][4];
+                //         matrixEqua->matrix[w][5]=matrixEqua->matrix[w][5]-constante.matrix[0][0]*matrixEqua->matrix[j][5];
+
+                //         break;
+                //     case 6:
+                //         matrixEqua->matrix[w][0]=matrixEqua->matrix[w][0]-constante.matrix[0][0]*matrixEqua->matrix[j][0];
+                //         matrixEqua->matrix[w][1]=matrixEqua->matrix[w][1]-constante.matrix[0][0]*matrixEqua->matrix[j][1];
+                //         matrixEqua->matrix[w][2]=matrixEqua->matrix[w][2]-constante.matrix[0][0]*matrixEqua->matrix[j][2];
+                //         matrixEqua->matrix[w][3]=matrixEqua->matrix[w][3]-constante.matrix[0][0]*matrixEqua->matrix[j][3];
+                //         matrixEqua->matrix[w][4]=matrixEqua->matrix[w][4]-constante.matrix[0][0]*matrixEqua->matrix[j][4];
+                //         matrixEqua->matrix[w][5]=matrixEqua->matrix[w][5]-constante.matrix[0][0]*matrixEqua->matrix[j][5];
+                //         matrixEqua->matrix[w][6]=matrixEqua->matrix[w][6]-constante.matrix[0][0]*matrixEqua->matrix[j][6];
+
+                //         break;
+                //     case 7:
+                //         matrixEqua->matrix[w][0]=matrixEqua->matrix[w][0]-constante.matrix[0][0]*matrixEqua->matrix[j][0];
+                //         matrixEqua->matrix[w][1]=matrixEqua->matrix[w][1]-constante.matrix[0][0]*matrixEqua->matrix[j][1];
+                //         matrixEqua->matrix[w][2]=matrixEqua->matrix[w][2]-constante.matrix[0][0]*matrixEqua->matrix[j][2];
+                //         matrixEqua->matrix[w][3]=matrixEqua->matrix[w][3]-constante.matrix[0][0]*matrixEqua->matrix[j][3];
+                //         matrixEqua->matrix[w][4]=matrixEqua->matrix[w][4]-constante.matrix[0][0]*matrixEqua->matrix[j][4];
+                //         matrixEqua->matrix[w][5]=matrixEqua->matrix[w][5]-constante.matrix[0][0]*matrixEqua->matrix[j][5];
+                //         matrixEqua->matrix[w][6]=matrixEqua->matrix[w][6]-constante.matrix[0][0]*matrixEqua->matrix[j][6];
+                //         matrixEqua->matrix[w][7]=matrixEqua->matrix[w][7]-constante.matrix[0][0]*matrixEqua->matrix[j][7];
+
+                //         break;
+                //     case 8:
+                //         matrixEqua->matrix[w][0]=matrixEqua->matrix[w][0]-constante.matrix[0][0]*matrixEqua->matrix[j][0];
+                //         matrixEqua->matrix[w][1]=matrixEqua->matrix[w][1]-constante.matrix[0][0]*matrixEqua->matrix[j][1];
+                //         matrixEqua->matrix[w][2]=matrixEqua->matrix[w][2]-constante.matrix[0][0]*matrixEqua->matrix[j][2];
+                //         matrixEqua->matrix[w][3]=matrixEqua->matrix[w][3]-constante.matrix[0][0]*matrixEqua->matrix[j][3];
+                //         matrixEqua->matrix[w][4]=matrixEqua->matrix[w][4]-constante.matrix[0][0]*matrixEqua->matrix[j][4];
+                //         matrixEqua->matrix[w][5]=matrixEqua->matrix[w][5]-constante.matrix[0][0]*matrixEqua->matrix[j][5];
+                //         matrixEqua->matrix[w][6]=matrixEqua->matrix[w][6]-constante.matrix[0][0]*matrixEqua->matrix[j][6];
+                //         matrixEqua->matrix[w][7]=matrixEqua->matrix[w][7]-constante.matrix[0][0]*matrixEqua->matrix[j][7];
+                //         matrixEqua->matrix[w][8]=matrixEqua->matrix[w][8]-constante.matrix[0][0]*matrixEqua->matrix[j][8];
+
+                //         break;
+                //     case 9:
+                //         matrixEqua->matrix[w][0]=matrixEqua->matrix[w][0]-constante.matrix[0][0]*matrixEqua->matrix[j][0];
+                //         matrixEqua->matrix[w][1]=matrixEqua->matrix[w][1]-constante.matrix[0][0]*matrixEqua->matrix[j][1];
+                //         matrixEqua->matrix[w][2]=matrixEqua->matrix[w][2]-constante.matrix[0][0]*matrixEqua->matrix[j][2];
+                //         matrixEqua->matrix[w][3]=matrixEqua->matrix[w][3]-constante.matrix[0][0]*matrixEqua->matrix[j][3];
+                //         matrixEqua->matrix[w][4]=matrixEqua->matrix[w][4]-constante.matrix[0][0]*matrixEqua->matrix[j][4];
+                //         matrixEqua->matrix[w][5]=matrixEqua->matrix[w][5]-constante.matrix[0][0]*matrixEqua->matrix[j][5];
+                //         matrixEqua->matrix[w][6]=matrixEqua->matrix[w][6]-constante.matrix[0][0]*matrixEqua->matrix[j][6];
+                //         matrixEqua->matrix[w][7]=matrixEqua->matrix[w][7]-constante.matrix[0][0]*matrixEqua->matrix[j][7];
+                //         matrixEqua->matrix[w][8]=matrixEqua->matrix[w][8]-constante.matrix[0][0]*matrixEqua->matrix[j][8];
+                //         matrixEqua->matrix[w][9]=matrixEqua->matrix[w][9]-constante.matrix[0][0]*matrixEqua->matrix[j][9];
+                        
+                //         break;
+                //     case 10:
+                //         matrixEqua->matrix[w][0]=matrixEqua->matrix[w][0]-constante.matrix[0][0]*matrixEqua->matrix[j][0];
+                //         matrixEqua->matrix[w][1]=matrixEqua->matrix[w][1]-constante.matrix[0][0]*matrixEqua->matrix[j][1];
+                //         matrixEqua->matrix[w][2]=matrixEqua->matrix[w][2]-constante.matrix[0][0]*matrixEqua->matrix[j][2];
+                //         matrixEqua->matrix[w][3]=matrixEqua->matrix[w][3]-constante.matrix[0][0]*matrixEqua->matrix[j][3];
+                //         matrixEqua->matrix[w][4]=matrixEqua->matrix[w][4]-constante.matrix[0][0]*matrixEqua->matrix[j][4];
+                //         matrixEqua->matrix[w][5]=matrixEqua->matrix[w][5]-constante.matrix[0][0]*matrixEqua->matrix[j][5];
+                //         matrixEqua->matrix[w][6]=matrixEqua->matrix[w][6]-constante.matrix[0][0]*matrixEqua->matrix[j][6];
+                //         matrixEqua->matrix[w][7]=matrixEqua->matrix[w][7]-constante.matrix[0][0]*matrixEqua->matrix[j][7];
+                //         matrixEqua->matrix[w][8]=matrixEqua->matrix[w][8]-constante.matrix[0][0]*matrixEqua->matrix[j][8];
+                //         matrixEqua->matrix[w][9]=matrixEqua->matrix[w][9]-constante.matrix[0][0]*matrixEqua->matrix[j][9];
+                //         matrixEqua->matrix[w][10]=matrixEqua->matrix[w][10]-constante.matrix[0][0]*matrixEqua->matrix[j][10];
+                //         break;
+                //     default:
+                //         puts("ERROR x,y,z");
+                //         break;
+
+                // }
                 w++;
+
+
                 // // printf("Valor en gauss  %f de la i %d y la k %d\n",matrix->matrix[i][k],i,k);
                 // matrixEqua->matrix[w][]=matrix->matrix[i][k]*matrixEqua->matrix[][w];
                 // // printf("Posicion0 %dtiene a  %f\n",w,matrixEqua->matrix[0][w]);
@@ -691,7 +613,6 @@ void MatrixSolutionLC(Matrix* matrix, int n, int unknown){
     //Por rows
     for(i=0;i<n;i++){
         sum=0;
-        sumA=0;
         for(k=0; k<n;k++){
             sum=abs(sum)+matrix->matrix[i][k];
             sumA=sumA+matrix->matrix[i][k];
@@ -709,7 +630,6 @@ void MatrixSolutionLC(Matrix* matrix, int n, int unknown){
     }else{
         printf("\n\n");
         puts("THAT'S A LINEAR COMBINATION OF U");
-
         puts("So, it belong to U");
         printf("\n");
         for(i=0;i<n;i++){ 
@@ -729,93 +649,21 @@ void MatrixSolutionTG(Matrix* matrix, int n, int unknown, Matrix* matrixEqua){
     int parameters=0,values=0,r=0,l;
     float dataAux[90];
     //Por rows
-    
+
     for(i=0;i<n;i++){
         sum=0;
-        sumA=0;
         for(k=0; k<unknown;k++){
             sum=abs(sum)+matrix->matrix[i][k];
             sumA=sumA+matrix->matrix[i][k];
         }
-        if(sum==0 && sumA==0){
+        if(sum==0 && sumA==0 && matrix->matrix[i][unknown]!=0){
             //There is no solution to the matrix
             flagTGmain=true;
         }
     }
-    // if(flagTGmain){
-    //     puts("VOtata");
-    // }else{
-    //     puts("Pasara");
-    // }
 
 
 }
-
-
-void OperacionGaussLinealIndependenci(Matrix* matrix, int n, Matrix* matrixEqua, int vectorsNumber){
-    //THIS JUST MAKE A DIAGONAL WITH 0'S UNDER
-    Matrix constante;
-    int aux=0;
-    int rowEqu=0, columnEqu=0;
-    int auxCount=0;
-    w=0;
-    for(j=0;j<vectorsNumber;j++){
-
-        for(i=0; i<n; i++){
-            if(i<j){
-                i++;
-            }
-            if(i!=j){
-
-
-
-                // if(matrix->matrix[j][j]==0){
-                //     swap(matrix,j);
-
-                // }
-
-
-
-
-                constante.matrix[0][0]=matrix->matrix[i][j]/matrix->matrix[j][j];
-                for(k=0; k<=vectorsNumber; k++)
-                {
-                    matrix->matrix[i][k]=matrix->matrix[i][k]-constante.matrix[0][0]*matrix->matrix[j][k];
-                }
-            }
-
-        }
-        aux++;
-        
-
-    }
-
-}
-
-void swap(Matrix* matrix,int aux){
-    Matrix matrixRespaldo;
-    int auxA;
-    auxA=aux+1;
-
-    if(matrix->matrix[auxA][aux]!=0){
-        auxA++;
-    }
-    if(matrix->matrix[auxA][aux]!=0){
-        auxA++;
-    }
-    if(matrix->matrix[auxA][aux]!=0){
-        auxA++;
-    }
-    for(k=0; k<=vectorsNumber; k++){
-        matrixRespaldo.matrix[0][k]=matrix->matrix[aux][k];
-        matrix->matrix[aux][k]=matrix->matrix[aux+1][k];
-        matrix->matrix[aux+1][k]=matrixRespaldo.matrix[0][k];
-   }
-
-
-
-}
-
 
 
 //             mm    mm                      
