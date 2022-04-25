@@ -104,8 +104,10 @@ void main(){
 
 void LinearCombination(Matrix* matrix){
     float data[90];
+    float dataInf[90];
     Matrix matrixEqua;
-    int aux,h=0,dataAux;
+    int aux,h=0,dataAux,unknown=0,auxUnknown=0,cursorUnknon=0,auxRows=0,u=0;
+    Matrix matrixConstant;
     puts("\n\n\n=============================================");
     puts("============ LINEAR COMBINATION =======");
     puts("=============================================\n\n\n");
@@ -180,15 +182,140 @@ void LinearCombination(Matrix* matrix){
             printf("\n\n");
 
         }
-    }else{
+    }else if(R>vectorsNumber){
         puts("THAT'S NOT A LINEAR COMBINATION OF U");
         puts("So, it doesn't belong to U");
+    }else{
+
+        puts("THAT'S A LINEAR COMBINATION OF U");
+        puts("It has infninity solutions So:");
+        //DESDE ACAAAA PAPAPAAAAA
+
+        //Infinity solutions
+        unknown=vectorsNumber-R;
+        // printf("XXXDDDD incognitas = %d",unknown);
+
+        puts("It has infninity solutions So:");
+        OperacionGauss(matrix, R, &matrixEqua, vectorsNumber);
+        // MatrixPrinting(matrix, R, vectorsNumber);
+        // puts("Making 1\not");
+        //MAKE 1 IN THE DIAGONAL
+        for(i=0;i<R;i++){
+            matrixConstant.matrix[0][0]=matrix->matrix[i][i];
+            for(l=0;l<=vectorsNumber;l++){
+                matrix->matrix[i][l]=matrix->matrix[i][l]/matrixConstant.matrix[0][0];
+            }
+            // for(w=0;w<R;w++){
+            //     matrixEqua.matrix[i][w]=matrixEqua.matrix[i][w]/matrixConstant.matrix[0][0];
+            // } 
+
+        }
+
+
+
+
+
+        // MatrixPrinting(matrix, R, vectorsNumber);
+
+        // MatrixPrinting(matrix, R, vectorsNumber);
+        // puts("Making the rest\not");
+
+
+        printf("\n(");
+            for(i=0; i<R;i++){
+                printf("%0.2f",data[i]);
+                if(i<R-1)
+                    printf(",");
+            }
+            printf(")=");
+        auxUnknown=0;
+        u=unknown;
+
+
+
+        // 
+        for(i=0; i<vectorsNumber;i++){
+
+            if(auxUnknown<R){
+                printf("+(");
+                
+                printf("+%f",matrix->matrix[i][vectorsNumber],w+1);
+                
+                cursorUnknon=R;
+                for(w=0;w<unknown;w++){
+                    printf("-%fP%d",matrix->matrix[i][cursorUnknon],w+1);
+                    cursorUnknon++;
+                }
+
+                printf(")");
+                printf("(");
+                h=0;
+                for(aux=0;aux<vectorsNumber;aux++){
+
+                    printf("%0.2f",data[dataAux]);
+                    dataAux++;
+                    h++;
+                    if(h<R){
+                        printf(",");
+                    
+                    }else{
+                        break;
+                    }
+
+                }
+                printf(")");
+
+                auxUnknown++;
+
+
+            }else{
+                // puts("====ENTRO==")
+                printf("+(");
+                printf("P%d",u);
+                u--;
+
+
+                printf(")");
+                auxRows++;
+                printf("(");
+                h=0;
+                for(aux=0;aux<vectorsNumber;aux++){
+
+                    printf("%0.2f",data[dataAux]);
+                    dataAux++;
+                    h++;
+                    if(h<R){
+                        printf(",");
+                    
+                    }else{
+                        break;
+                    }
+
+                }
+                printf(")");
+
+                auxUnknown++;
+
+            }
+
+//AQUI VOY
+
+
+        }
+    printf("\n\n");
+
     }
+
+   //AQUI SE QUEDA 
+
+
+
+}
     // MatrixPrinting(matrix, R, vectorsNumber);
     // OperacionGauss(matrix, R);
     // MatrixPrinting(matrix, R, vectorsNumber);
 
-}
+
 
 void TermGenerato(Matrix* matrix){
     //THIS IS THE MUST DIFFICULT ONE
@@ -985,8 +1112,12 @@ void Basis(Matrix* matrix){
 
 
     OperacionGaussLinealIndependenci(&matrixLinearInd, R, &matrixEqua, vectorsNumber);
+    OperacionGaussLinealIndependenci(&matrixLinearInd, R, &matrixEqua, vectorsNumber);
+    OperacionGaussLinealIndependenci(&matrixLinearInd, R, &matrixEqua, vectorsNumber);
     // MatrixPrinting(matrix, R, vectorsNumber);
 
+    conLiInd=0;
+    // printf("**valor del con=%d",conLiInd);
     for(i=0;i<R;i++){
         sum=0;
         sumA=0;
@@ -1000,6 +1131,8 @@ void Basis(Matrix* matrix){
         }
         
     }   
+    // puts("IMPRIMIEDNO EN LA MMISMA FUNCION");
+    // MatrixPrinting(&matrixLinearInd, R, vectorsNumber);
 
     if(conLiInd==vectorsNumber){
         puts("THAT SET IS LINEAR INDEPENDECE");
@@ -1051,6 +1184,8 @@ void OperacionGauss(Matrix* matrix, int n, Matrix* matrixEqua, int vectorsNumber
     int rowEqu=0, columnEqu=0;
     int auxCount=0;
     w=0;
+    //watching the matrix
+    swapInit(matrix,R,vectorsNumber);
     for(j=0;j<n;j++){
         auxCount++;
         for(i=0; i<n; i++){
@@ -1255,6 +1390,12 @@ void OperacionGaussLinealIndependenci(Matrix* matrix, int n, Matrix* matrixEqua,
         
 
     }
+    // puts("IMPRIMIENDO DESPUES DEL GAUSS");
+    // MatrixPrinting(matrix, R, vectorsNumber);
+
+
+
+
 
 }
 
@@ -1286,36 +1427,30 @@ void swap(Matrix* matrix,int R, int vectorsNumber,int aux){
 
 void swapInit(Matrix* matrix,int R, int vectorsNumber){
     Matrix matrixRespaldo;
-    int e=0,random,aux;
-    
-    srand(time(0));
-    //USING ROWS AND THE MATRIX
-    // while(e<=100){
-    //     if(R>vectorsNumber){
-    //         aux=vectorsNumber;
-    //     }else{
-    //         aux=R;
-    //     }
-        for(j=0; j<aux;j++){
-            if(matrix->matrix[j][j]==0){
-                // random=(rand() % R);
-                // // printf("%d\n\n",random);
-                // printf("Realiza un cambio de: %d a %d\n",j,random);
-                // MatrixPrinting(matrix, R,vectorsNumber);
-                // //random numbers from 0-(R-1)
-                // for(k=0; k<=vectorsNumber; k++){
-                //     matrixRespaldo.matrix[0][k]=matrix->matrix[j][k];
-                //     matrix->matrix[j][k]=matrix->matrix[random][k];
-                //     matrix->matrix[random][k]=matrixRespaldo.matrix[0][k];
-                // }
-                // puts("eSTE FUE");
-                // MatrixPrinting(matrix, R,vectorsNumber);
-                swap(matrix,aux,R,vectorsNumber);
+    MatrixStarting(&matrixRespaldo,TAM);
+    int cursor=0,e=0,m=0,w=0;
+    cursor++;
+    int aux;
+    aux=R-1;
+    for(w=0;w<R;w++){
+        if(matrix->matrix[aux][aux]==0){
+
+            for(e=0;e<R;e++){
+                if(matrix->matrix[e][aux]!=0){
+                    for(m=0; m<=vectorsNumber; m++){
+                    matrixRespaldo.matrix[0][m]=matrix->matrix[aux][m];
+                    matrix->matrix[aux][m]=matrix->matrix[e][m];
+                    matrix->matrix[e][m]=matrixRespaldo.matrix[0][m];
+                    }
+
+                }
             }
-            
-    //     }            
-    //     e++;
+   
+        }
+
+        aux--;
     }
+    
 }
 
 
