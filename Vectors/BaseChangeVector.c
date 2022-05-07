@@ -40,12 +40,12 @@ void BothFunction(Matrix* matrix);
 void Canonic(Matrix* matrix);
 void ChangeBase();
 //FROM Vector's program
-void LinearCombination(Matrix* matrixB1, Matrix* matrixB2, Matrix* matrixChangeBase);
-void TermGenerato(Matrix* matrix);
-void LinearIndependence(Matrix* matrix);
-void Basis(Matrix* matrix);
+void LinearCombination(Matrix matrixB1, Matrix matrixB2, Matrix* matrixChangeBase, int counter);
+
+
 void swap(Matrix* matrix,int aux, int R, int vectorsNumber);
 void swapInit(Matrix* matrix,int R, int vectorsNumber);
+bool isBasis(Matrix matrix, int R, int vectorsNumber);
 //FroM GaussJordan's Program
 void MatrixStarting(Matrix* matrix, int Tam);
 void OperacionGauss(Matrix* matrix, int n, Matrix* matrixEqua, int vectorsNumber);
@@ -108,6 +108,9 @@ void ChangeBase(){
     Matrix matrixChangeBase;
     Matrix matrixB1;
     Matrix matrixB2;
+    Matrix matrixNewBase;
+    int counter;
+    float value=0;
     puts("\n\n\n=============================================");
     puts("================ CHANGE BASE =============");
     puts("=============================================\n\n\n");
@@ -116,15 +119,72 @@ void ChangeBase(){
     fflush(stdin);
     scanf("%d",&R);
     printf("\n\n");
-    dataAux=R;
     //WEE START MAKING THE INIT OF THE MATRIX AND FULLING WITH THE DATA
     puts("Insert the number of Vectors:");
     fflush(stdin);
     scanf("%d",&vectorsNumber);
     printf("\n\n");
+    if(isBasis(matrixB1, R, vectorsNumber)){
+        if(isBasis(matrixB2, R,vectorsNumber)){
+            //THE MAIN PROGRAM :3
+
+            //LET'S FIND THE MATRIX CHANGE BASE
+            //REMEMBER USE THE LINEAR COMBINATION
+            //This is for the coulumns of the matrix
+            for(counter=0; counter<R; counter++){
+                LinearCombination(matrixB1,matrixB2, &matrixChangeBase, counter);
+            }
+            puts("SO THE MATRIX CHANGE BASE IS:");
+            MatrixPrinting(&matrixChangeBase, R, vectorsNumber);
+
+            //NOW LET'S DO THE ARITHMETIC PART
+            //A(X)=(Y)
+
+            //FOR EVERY COLUMUN in B
+            for(counter=0; counter<R; counter++){
+
+                //FOR EVERY ROW in A
+                for(int a=0; counter<R; counter++){
+                    value=0;
+                    //for evrey row in A
+                    for(int b=0; b<R; b++){
+                        value += matrixB1.matrix[a][b] * matrixChangeBase.matrix[b][counter];
+                    }
+                    matrixNewBase.matrix[a][counter]=value;
+                }
+                
+            }
+            puts("AND THE NEW B1->B1 is:");
+
+            printf("B1 ==> B1{");
+            for(int c=0; c<R; c++){
+                printf("(");
+                for(counter=0; counter<R; counter++){
+                    if(counter<R){
+                        printf("%f)",matrixNewBase.matrix[c][counter]);
+
+                    }else{
+                        printf("%f,",matrixNewBase.matrix[c][counter]);
+                    }
 
 
+                }
+                if(c<R){
+                    printf("}\n\n");
 
+                }else{
+                    printf(",");
+                }
+
+            }
+
+
+        }else{
+            puts("THE MATRIX B2 IS NOT A BASIS");
+        }
+    }else{
+        puts("THE MATRIX B1 IS NOT A BASIS");
+    }
 }
 
 
@@ -134,7 +194,7 @@ void ChangeBase(){
 
 
 
-void LinearCombination(Matrix* matrixB1, Matrix* matrixB2, Matrix* matrixChangeBase){
+void LinearCombination(Matrix matrixB1, Matrix matrixB2, Matrix* matrixChangeBase, int counter){
     float data[90];
     float dataInf[90];
     Matrix matrixEqua;
@@ -214,996 +274,13 @@ void LinearCombination(Matrix* matrixB1, Matrix* matrixB2, Matrix* matrixChangeB
             printf("\n\n");
 
         }
-    }else if(R>vectorsNumber){
-        puts("THAT'S NOT A LINEAR COMBINATION OF U");
-        puts("So, it doesn't belong to U");
-    }else{
-
-        puts("THAT'S A LINEAR COMBINATION OF U");
-        puts("It has infninity solutions So:");
-        //DESDE ACAAAA PAPAPAAAAA
-
-        //Infinity solutions
-        unknown=vectorsNumber-R;
-        // printf("XXXDDDD incognitas = %d",unknown);
-
-        puts("It has infninity solutions So:");
-        OperacionGauss(matrix, R, &matrixEqua, vectorsNumber);
-        // MatrixPrinting(matrix, R, vectorsNumber);
-        // puts("Making 1\not");
-        //MAKE 1 IN THE DIAGONAL
-        for(i=0;i<R;i++){
-            matrixConstant.matrix[0][0]=matrix->matrix[i][i];
-            for(l=0;l<=vectorsNumber;l++){
-                matrix->matrix[i][l]=matrix->matrix[i][l]/matrixConstant.matrix[0][0];
-            }
-            // for(w=0;w<R;w++){
-            //     matrixEqua.matrix[i][w]=matrixEqua.matrix[i][w]/matrixConstant.matrix[0][0];
-            // } 
-
-        }
-
-
-
-
-
-        // MatrixPrinting(matrix, R, vectorsNumber);
-
-        // MatrixPrinting(matrix, R, vectorsNumber);
-        // puts("Making the rest\not");
-
-
-        printf("\n(");
-            for(i=0; i<R;i++){
-                printf("%0.2f",data[i]);
-                if(i<R-1)
-                    printf(",");
-            }
-            printf(")=");
-        auxUnknown=0;
-        u=unknown;
-
-
-
-        // 
-        for(i=0; i<vectorsNumber;i++){
-
-            if(auxUnknown<R){
-                printf("+(");
-                
-                printf("+%f",matrix->matrix[i][vectorsNumber],w+1);
-                
-                cursorUnknon=R;
-                for(w=0;w<unknown;w++){
-                    printf("-%fP%d",matrix->matrix[i][cursorUnknon],w+1);
-                    cursorUnknon++;
-                }
-
-                printf(")");
-                printf("(");
-                h=0;
-                for(aux=0;aux<vectorsNumber;aux++){
-
-                    printf("%0.2f",data[dataAux]);
-                    dataAux++;
-                    h++;
-                    if(h<R){
-                        printf(",");
-                    
-                    }else{
-                        break;
-                    }
-
-                }
-                printf(")");
-
-                auxUnknown++;
-
-
-            }else{
-                // puts("====ENTRO==")
-                printf("+(");
-                printf("P%d",u);
-                u--;
-
-
-                printf(")");
-                auxRows++;
-                printf("(");
-                h=0;
-                for(aux=0;aux<vectorsNumber;aux++){
-
-                    printf("%0.2f",data[dataAux]);
-                    dataAux++;
-                    h++;
-                    if(h<R){
-                        printf(",");
-                    
-                    }else{
-                        break;
-                    }
-
-                }
-                printf(")");
-
-                auxUnknown++;
-
-            }
-
-//AQUI VOY
-
-
-        }
-    printf("\n\n");
-
     }
-
-   //AQUI SE QUEDA 
-
 
 
 }
     // MatrixPrinting(matrix, R, vectorsNumber);
     // OperacionGauss(matrix, R);
     // MatrixPrinting(matrix, R, vectorsNumber);
-
-
-
-void TermGenerato(Matrix* matrix){
-    //THIS IS THE MUST DIFFICULT ONE
-    float data[90];
-    Matrix matrixEqua;
-    Matrix matrixConstant;
-    float sum,sumA;
-    int parameters=0,auxRows=0, unknown=0, cursorUnknon=0, auxUnknown=0;
-    int aux=0,h=0,dataAux,u=0;
-    puts("\n\n\n=============================================");
-    puts("============ TERM GENERATOR =======");
-    puts("=============================================\n\n\n");
-    puts("Insert the dimension of R:");
-    fflush(stdin);
-    scanf("%d",&R);
-    printf("\n\n");
-    dataAux=R;
-    puts("Insert the number of Vectors:");
-    fflush(stdin);
-    scanf("%d",&vectorsNumber);
-    printf("\n\n");
-    k=R;
-    //Init of the new Matrix
-    for(i=0; i<=TAM-1; i++){
-        for(j=0; j<=TAM; j++)
-        {
-            if(j==i){
-                matrixEqua.matrix[i][j]=1;
-            }else{
-                matrixEqua.matrix[i][j]=0;
-            }
-        }
-    }
-    //AGAIN WEE FILL EVERITHING BUT WE ALSO ADD
-    //THE VECTORS DATA
-    puts("**LET'S  START**");
-    //The last Column  
-    //Init of that
-    for(i=0; i<R; i++){
-        matrix->matrix[i][vectorsNumber]=1;
-    }
-    for(i=0;i<TAM;i++){
-
-    }
-    puts("-Insert the Vectors");    
-    for(i=0; i<vectorsNumber; i++){
-        printf("\nFor the vector # %d: \n",i+1);
-        for(j=0; j<R; j++){
-            printf("Insert the data of the number #%d\n",j+1);
-            fflush(stdin);
-            scanf("%f",&matrix->matrix[j][i]);
-            data[k]=matrix->matrix[j][i];
-            k++;
-        }
-    }
-
-    //FIRST WITH THAT INFORMATION WE CAN KNOW ABOUT THE MATRIX
-    if(R>vectorsNumber){
-        puts("THAT'S NOT A SET GENERATOR");
-        puts("(Because the matrix has not solutions)");
-    }else if(R==vectorsNumber){
- 
-        OperacionGauss(matrix, R, &matrixEqua, vectorsNumber);
-        MatrixSolutionTG(matrix,R,vectorsNumber, &matrixEqua);
-
-
-        for(i=0;i<R;i++){
-            sumA=0;
-            sum=0;
-            for(k=0; k<vectorsNumber;k++){
-                sum=abs(sum)+matrix->matrix[i][k];
-                sumA=sumA+matrix->matrix[i][k];
-            }
-            if(sum<=0.0000009 && sumA<=0.0000009 && sum>=-0.0000009 && sumA>=-0.0000009){
-                parameters++;
-                // puts("SUma de parameters");
-            }   
-        }
-
-        if(flagTGmain){
-            puts("THAT'S NOT A SET GENERATOR");
-            puts("Because the matrix hasnot solutions");
-        
-        }else{
-            printf("\n\n");
-            // puts("Aqui pasa calabaza");
-            puts("THAT'S A SET GENERATOR");
-            flagBTG=true;
-            if(parameters==0){
-                //Unic Solution
-                // for(i=0;i<R;i++){ 
-                // matrixConstant.matrix[0][0]=matrix->matrix[i][i];
-                // matrix->matrix[i][i]=matrix->matrix[i][i]/matrixConstant.matrix[0][0];
-                // matrix->matrix[i][R]=matrix->matrix[i][R]/matrixConstant.matrix[0][0];
-                // }
-                //Printing the solutions
-                printf("(");
-                for(i=0; i<R;i++){
-                    printf("X%d",i+1);
-                    if(i<R-1)
-                        printf(",");
-                }
-                printf(")=");
-                for(i=0; i<R;i++){
-                    printf("+(");
-                    for(w=0;w<R;w++){
-                        matrixEqua.matrix[auxRows][w]=matrixEqua.matrix[auxRows][w]/matrix->matrix[i][i];
-                        printf("+%fY%d",matrixEqua.matrix[auxRows][w],w+1);
-                    }
-                    printf(")");
-                    auxRows++;
-                    printf("(");
-                    h=0;
-                    for(aux=0;aux<R;aux++){
-
-                        printf("%0.2f",data[dataAux]);
- 
-                        dataAux++;
-                        h++;
-                        if(h<R){
-                            printf(",");
-                    
-                        }else{
-                            break;
-                        }
-
-                    }
-                    printf(")");
-
-                }
-                printf("\n\n");
-    
-            }else{
-
-                //THIS IS THE COPY
-
-                unknown=vectorsNumber-R;
-
-                // puts("aCA DESPUES");
-
-                puts("It has infninity solutions So:");
-                OperacionGauss(matrix, R, &matrixEqua, vectorsNumber);
-                MatrixSolutionTG(matrix,R,vectorsNumber, &matrixEqua);
-
-                for(i=0;i<R;i++){
-                    matrixConstant.matrix[0][0]=matrix->matrix[i][i];
-                    for(l=0;l<=vectorsNumber;l++){
-                        matrix->matrix[i][l]=matrix->matrix[i][l]/matrixConstant.matrix[0][0];
-                    }
-                    for(w=0;w<R;w++){
-                        matrixEqua.matrix[i][w]=matrixEqua.matrix[i][w]/matrixConstant.matrix[0][0];
-                    } 
-
-                }
-
-
-                printf("\n(");
-                for(i=0; i<R;i++){
-                    printf("X%d",i+1);
-                    if(i<R-1)
-                        printf(",");
-                }
-
-                printf(")=");
-                auxUnknown=0;
-                u=unknown;
-
-                for(i=0; i<vectorsNumber;i++){
-
-                    if(auxUnknown<R){
-                        printf("+(");
-                        for(w=0;w<R;w++){
-                            matrixEqua.matrix[auxRows][w]=matrixEqua.matrix[auxRows][w]/matrix->matrix[i][i];
-                            printf("+%fY%d",matrixEqua.matrix[auxRows][w],w+1);
-                        }
-                        cursorUnknon=vectorsNumber;
-                        for(w=0;w<unknown;w++){
-                            cursorUnknon--;
-                            printf("-%fP%d",matrix->matrix[i][cursorUnknon],w+1);
-                
-                        }
-
-                        printf(")");
-                        auxRows++;
-                        printf("(");
-                        h=0;
-                        for(aux=0;aux<vectorsNumber;aux++){
-
-                            printf("%0.2f",data[dataAux]);
-                            dataAux++;
-                            h++;
-                            if(h<R){
-                                printf(",");
-                    
-                            }else{
-                                break;
-                            }
-
-                        }
-                        printf(")");
-
-                        auxUnknown++;
-
-
-                    }else{
-                        // puts("====ENTRO==")
-                        printf("+(");
-                        printf("P%d",u);
-                        u--;
-
-
-                        printf(")");
-                        auxRows++;
-                        printf("(");
-                        h=0;
-                        for(aux=0;aux<vectorsNumber;aux++){
-
-                            printf("%0.2f",data[dataAux]);
-                            dataAux++;
-                            h++;
-                            if(h<R){
-                                printf(",");
-                    
-                            }else{
-                                break;
-                            }
-
-                        }
-                        printf(")");
-
-                        auxUnknown++;
-
-                    }
-                }
-                printf("\n\n");
-            }
-        }
-
-    }else if(vectorsNumber>R){
-
-        //Infinity solutions
-        unknown=vectorsNumber-R;
-        // printf("XXXDDDD incognitas = %d",unknown);
-        puts("THAT'S  A SET GENERATOR");
-        flagBTG=true;
-
-        puts("It has infninity solutions So:");
-        OperacionGauss(matrix, R, &matrixEqua, vectorsNumber);
-        MatrixSolutionTG(matrix,R,vectorsNumber, &matrixEqua);
-        // MatrixPrinting(matrix, R, vectorsNumber);
-        // puts("Making 1\not");
-        for(i=0;i<R;i++){
-            matrixConstant.matrix[0][0]=matrix->matrix[i][i];
-            for(l=0;l<=vectorsNumber;l++){
-                matrix->matrix[i][l]=matrix->matrix[i][l]/matrixConstant.matrix[0][0];
-            }
-            for(w=0;w<R;w++){
-                matrixEqua.matrix[i][w]=matrixEqua.matrix[i][w]/matrixConstant.matrix[0][0];
-            } 
-
-        }
-
-
-
-
-        // MatrixPrinting(matrix, R, vectorsNumber);
-        // puts("Making the rest\not");
-
-
-        printf("\n(");
-        for(i=0; i<R;i++){
-            printf("X%d",i+1);
-            if(i<R-1)
-                printf(",");
-        }
-
-        printf(")=");
-        auxUnknown=0;
-        u=unknown;
-
-        for(i=0; i<vectorsNumber;i++){
-
-            if(auxUnknown<R){
-                printf("+(");
-                for(w=0;w<R;w++){
-                    matrixEqua.matrix[auxRows][w]=matrixEqua.matrix[auxRows][w]/matrix->matrix[i][i];
-                    printf("+%fY%d",matrixEqua.matrix[auxRows][w],w+1);
-                }
-                cursorUnknon=vectorsNumber;
-                for(w=0;w<unknown;w++){
-                    cursorUnknon--;
-                    printf("-%fP%d",matrix->matrix[i][cursorUnknon],w+1);
-                
-                }
-
-                printf(")");
-                auxRows++;
-                printf("(");
-                h=0;
-                for(aux=0;aux<vectorsNumber;aux++){
-
-                    printf("%0.2f",data[dataAux]);
-                    dataAux++;
-                    h++;
-                    if(h<R){
-                        printf(",");
-                    
-                    }else{
-                        break;
-                    }
-
-                }
-                printf(")");
-
-                auxUnknown++;
-
-
-            }else{
-                // puts("====ENTRO==")
-                printf("+(");
-                printf("P%d",u);
-                u--;
-
-
-                printf(")");
-                auxRows++;
-                printf("(");
-                h=0;
-                for(aux=0;aux<vectorsNumber;aux++){
-
-                    printf("%0.2f",data[dataAux]);
-                    dataAux++;
-                    h++;
-                    if(h<R){
-                        printf(",");
-                    
-                    }else{
-                        break;
-                    }
-
-                }
-                printf(")");
-
-                auxUnknown++;
-
-            }
-
-//AQUI VOY
-
-
-        }
-    printf("\n\n");
-
-    }
-    // MatrixPrinting(matrix, R, vectorsNumber);
-    // OperacionGauss(matrix, R);
-    // MatrixPrinting(matrix, R, vectorsNumber);
-
-}
-
-
-void LinearIndependence(Matrix* matrix){
-    //WE JUST NEED TO KNOW
-    //A* AND THE UNKNOWS OF THE MATRIX
-    Matrix matrixEqua;
-    float sum,sumA;
-    int conLiInd=0,n,thereIs0=0;
-    puts("\n\n\n=============================================");
-    puts("============ LINEAR INDEPENDECE =======");
-    puts("=============================================\n\n\n");
-    puts("Insert the dimension of R:");
-    fflush(stdin);
-    scanf("%d",&R);
-    printf("\n\n");
-    puts("Insert the number of Vectors:");
-    fflush(stdin);
-    scanf("%d",&vectorsNumber);
-    printf("\n\n");
-    //Init of the new Matrix
-    MatrixStarting(matrix,TAM);
-
-    puts("**LET'S  START**");
-    puts("-Insert the Vectors");    
-    for(i=0; i<vectorsNumber; i++){
-        printf("\nFor the vector # %d: \n",i+1);
-        for(j=0; j<R; j++){
-            printf("Insert the data of the number #%d\n",j+1);
-            fflush(stdin);
-            scanf("%f",&matrix->matrix[j][i]);
-        }
-    }
-
-    // MatrixPrinting(matrix, R, vectorsNumber);
-    //     puts("SWAP");
-    //     swapInit(matrix,R,vectorsNumber);
-    //     MatrixPrinting(matrix, R, vectorsNumber);
-    //     puts("GUASS");
-
-    OperacionGaussLinealIndependenci(matrix, R, &matrixEqua, vectorsNumber);
-    // MatrixPrinting(matrix, R, vectorsNumber);
-
-    for(i=0;i<R;i++){
-        sum=0;
-        sumA=0;
-        for(k=0; k<vectorsNumber;k++){
-            sum=abs(sum)+matrix->matrix[i][k];
-            sumA=sumA+matrix->matrix[i][k];
-        }
-        if(!(sum<=0.000009 && sumA<=0.000009 && sum>=-0.000009 && sumA>=-0.000009)){
-            //sumA!=0
-            conLiInd++;
-        }
-        
-    }   
-    //SO IS THE MOST EASY ONE
-
-    if(conLiInd==vectorsNumber){
-        puts("THAT SET IS LINEAR INDEPENDECE");
-        printf("Because #Unknowns=%d=A*=%d\n\n\n",conLiInd,vectorsNumber);
-    }else{
-        puts("THAT SET IS NOT LINEAR INDEPENDECE");
-        //THIS IS RIGHT
-        printf("Because #Unknowns=%d is different from A*=%d\n\n",vectorsNumber,conLiInd);
-    }
-
-
-}
-
-
-void Basis(Matrix* matrix){
-    // I COPY THE TERM GENERATOR AND TRANSFOR INTO THIS
-    //IS THE UNION OF THE TWO FUNCIONS ABOVE
-    float data[90];
-    Matrix matrixEqua;
-    Matrix matrixConstant;
-    Matrix matrixLinearInd;
-    float sum,sumA;
-    int parameters=0,auxRows=0, unknown=0, cursorUnknon=0, auxUnknown=0;
-    int aux=0,h=0,dataAux,u=0;
-    int conLiInd=0,n,thereIs0=0;
-    puts("\n\n\n=============================================");
-    puts("============        BASIS     ===========");
-    puts("=============================================\n\n\n");
-    //INIT OF the matrixLinearly
-    MatrixStarting(&matrixLinearInd,TAM);
-    puts("Insert the dimension of R:");
-    fflush(stdin);
-    scanf("%d",&R);
-    printf("\n\n");
-    dataAux=R;
-    puts("Insert the number of Vectors:");
-    fflush(stdin);
-    scanf("%d",&vectorsNumber);
-    printf("\n\n");
-    k=R;
-    //Init of the new Matrix
-    for(i=0; i<=TAM-1; i++){
-        for(j=0; j<=TAM; j++)
-        {
-            if(j==i){
-                matrixEqua.matrix[i][j]=1;
-            }else{
-                matrixEqua.matrix[i][j]=0;
-            }
-        }
-    }
-
-    puts("**LET'S  START **");
-    puts("LETS CHECK IF THE SET IS A TERM GENERATOR");
-    //The last Column  
-    //Init of that
-    for(i=0; i<R; i++){
-        matrix->matrix[i][vectorsNumber]=1;
-    }
-    for(i=0;i<TAM;i++){
-
-    }
-    puts("-Insert the Vectors");    
-    for(i=0; i<vectorsNumber; i++){
-        printf("\nFor the vector # %d: \n",i+1);
-        for(j=0; j<R; j++){
-            printf("Insert the data of the number #%d\n",j+1);
-            fflush(stdin);
-            scanf("%f",&matrix->matrix[j][i]);
-            data[k]=matrix->matrix[j][i];
-            matrixLinearInd.matrix[j][i]=matrix->matrix[j][i];
-            k++;
-        }
-    }
-
-
-    if(R>vectorsNumber){
-        puts("THAT'S NOT A SET GENERATOR");
-        puts("(Because the matrix has not solutions)");
-        flagBTG=false;
-    }else if(R==vectorsNumber){
- 
-        OperacionGauss(matrix, R, &matrixEqua, vectorsNumber);
-        MatrixSolutionTG(matrix,R,vectorsNumber, &matrixEqua);
-
-
-        for(i=0;i<R;i++){
-            sumA=0;
-            sum=0;
-            for(k=0; k<vectorsNumber;k++){
-                sum=abs(sum)+matrix->matrix[i][k];
-                sumA=sumA+matrix->matrix[i][k];
-            }
-            if(sum<=0.0000009 && sumA<=0.0000009 && sum>=-0.0000009 && sumA>=-0.0000009){
-                parameters++;
-                // puts("SUma de parameters");
-            }   
-        }
-
-        if(flagTGmain){
-            puts("THAT'S NOT A SET GENERATOR");
-            puts("Because the matrix hasnot solutions");
-            flagBTG=false;
-        
-        }else{
-            printf("\n\n");
-            // puts("Aqui pasa calabaza");
-            puts("THAT'S A SET GENERATOR");
-            //Flag of the basis
-            flagBTG=true;
-            if(parameters==0){
-                //Unic Solution
-                // for(i=0;i<R;i++){ 
-                // matrixConstant.matrix[0][0]=matrix->matrix[i][i];
-                // matrix->matrix[i][i]=matrix->matrix[i][i]/matrixConstant.matrix[0][0];
-                // matrix->matrix[i][R]=matrix->matrix[i][R]/matrixConstant.matrix[0][0];
-                // }
-                //Printing the solutions
-                printf("(");
-                for(i=0; i<R;i++){
-                    printf("X%d",i+1);
-                    if(i<R-1)
-                        printf(",");
-                }
-                printf(")=");
-                for(i=0; i<R;i++){
-                    printf("+(");
-                    for(w=0;w<R;w++){
-                        matrixEqua.matrix[auxRows][w]=matrixEqua.matrix[auxRows][w]/matrix->matrix[i][i];
-                        printf("+%fY%d",matrixEqua.matrix[auxRows][w],w+1);
-                    }
-                    printf(")");
-                    auxRows++;
-                    printf("(");
-                    h=0;
-                    for(aux=0;aux<R;aux++){
-
-                        printf("%0.2f",data[dataAux]);
- 
-                        dataAux++;
-                        h++;
-                        if(h<R){
-                            printf(",");
-                    
-                        }else{
-                            break;
-                        }
-
-                    }
-                    printf(")");
-
-                }
-                printf("\n\n");
-    
-            }else{
-
-                //THIS IS THE COPY
-
-                unknown=vectorsNumber-R;
-
-                // puts("aCA DESPUES");
-
-                puts("It has infninity solutions So:");
-                OperacionGauss(matrix, R, &matrixEqua, vectorsNumber);
-                MatrixSolutionTG(matrix,R,vectorsNumber, &matrixEqua);
-
-                for(i=0;i<R;i++){
-                    matrixConstant.matrix[0][0]=matrix->matrix[i][i];
-                    for(l=0;l<=vectorsNumber;l++){
-                        matrix->matrix[i][l]=matrix->matrix[i][l]/matrixConstant.matrix[0][0];
-                    }
-                    for(w=0;w<R;w++){
-                        matrixEqua.matrix[i][w]=matrixEqua.matrix[i][w]/matrixConstant.matrix[0][0];
-                    } 
-
-                }
-
-
-                printf("\n(");
-                for(i=0; i<R;i++){
-                    printf("X%d",i+1);
-                    if(i<R-1)
-                        printf(",");
-                }
-
-                printf(")=");
-                auxUnknown=0;
-                u=unknown;
-
-                for(i=0; i<vectorsNumber;i++){
-
-                    if(auxUnknown<R){
-                        printf("+(");
-                        for(w=0;w<R;w++){
-                            matrixEqua.matrix[auxRows][w]=matrixEqua.matrix[auxRows][w]/matrix->matrix[i][i];
-                            printf("+%fY%d",matrixEqua.matrix[auxRows][w],w+1);
-                        }
-                        cursorUnknon=vectorsNumber;
-                        for(w=0;w<unknown;w++){
-                            cursorUnknon--;
-                            printf("-%fP%d",matrix->matrix[i][cursorUnknon],w+1);
-                
-                        }
-
-                        printf(")");
-                        auxRows++;
-                        printf("(");
-                        h=0;
-                        for(aux=0;aux<vectorsNumber;aux++){
-
-                            printf("%0.2f",data[dataAux]);
-                            dataAux++;
-                            h++;
-                            if(h<R){
-                                printf(",");
-                    
-                            }else{
-                                break;
-                            }
-
-                        }
-                        printf(")");
-
-                        auxUnknown++;
-
-
-                    }else{
-                        // puts("====ENTRO==")
-                        printf("+(");
-                        printf("P%d",u);
-                        u--;
-
-
-                        printf(")");
-                        auxRows++;
-                        printf("(");
-                        h=0;
-                        for(aux=0;aux<vectorsNumber;aux++){
-
-                            printf("%0.2f",data[dataAux]);
-                            dataAux++;
-                            h++;
-                            if(h<R){
-                                printf(",");
-                    
-                            }else{
-                                break;
-                            }
-
-                        }
-                        printf(")");
-
-                        auxUnknown++;
-
-                    }
-                }
-                printf("\n\n");
-            }
-        }
-
-    }else if(vectorsNumber>R){
-
-        //Infinity solutions
-        unknown=vectorsNumber-R;
-        // printf("XXXDDDD incognitas = %d",unknown);
-        puts("THAT'S  A SET GENERATOR");
-        //flag of the Basis
-        flagBTG=true;
-
-        puts("It has infninity solutions So:");
-        OperacionGauss(matrix, R, &matrixEqua, vectorsNumber);
-        MatrixSolutionTG(matrix,R,vectorsNumber, &matrixEqua);
-        // MatrixPrinting(matrix, R, vectorsNumber);
-        // puts("Making 1\not");
-        for(i=0;i<R;i++){
-            matrixConstant.matrix[0][0]=matrix->matrix[i][i];
-            for(l=0;l<=vectorsNumber;l++){
-                matrix->matrix[i][l]=matrix->matrix[i][l]/matrixConstant.matrix[0][0];
-            }
-            for(w=0;w<R;w++){
-                matrixEqua.matrix[i][w]=matrixEqua.matrix[i][w]/matrixConstant.matrix[0][0];
-            } 
-
-        }
-
-
-
-
-        // MatrixPrinting(matrix, R, vectorsNumber);
-        // puts("Making the rest\not");
-
-
-        printf("\n(");
-        for(i=0; i<R;i++){
-            printf("X%d",i+1);
-            if(i<R-1)
-                printf(",");
-        }
-
-        printf(")=");
-        auxUnknown=0;
-        u=unknown;
-
-        for(i=0; i<vectorsNumber;i++){
-
-            if(auxUnknown<R){
-                printf("+(");
-                for(w=0;w<R;w++){
-                    matrixEqua.matrix[auxRows][w]=matrixEqua.matrix[auxRows][w]/matrix->matrix[i][i];
-                    printf("+%fY%d",matrixEqua.matrix[auxRows][w],w+1);
-                }
-                cursorUnknon=vectorsNumber;
-                for(w=0;w<unknown;w++){
-                    cursorUnknon--;
-                    printf("-%fP%d",matrix->matrix[i][cursorUnknon],w+1);
-                
-                }
-
-                printf(")");
-                auxRows++;
-                printf("(");
-                h=0;
-                for(aux=0;aux<vectorsNumber;aux++){
-
-                    printf("%0.2f",data[dataAux]);
-                    dataAux++;
-                    h++;
-                    if(h<R){
-                        printf(",");
-                    
-                    }else{
-                        break;
-                    }
-
-                }
-                printf(")");
-
-                auxUnknown++;
-
-
-            }else{
-                // puts("====ENTRO==")
-                printf("+(");
-                printf("P%d",u);
-                u--;
-
-
-                printf(")");
-                auxRows++;
-                printf("(");
-                h=0;
-                for(aux=0;aux<vectorsNumber;aux++){
-
-                    printf("%0.2f",data[dataAux]);
-                    dataAux++;
-                    h++;
-                    if(h<R){
-                        printf(",");
-                    
-                    }else{
-                        break;
-                    }
-
-                }
-                printf(")");
-
-                auxUnknown++;
-
-            }
-
-
-
-        }
-    printf("\n\n");
-
-    }
-    // MatrixPrinting(matrix, R, vectorsNumber);
-    // OperacionGauss(matrix, R);
-    // MatrixPrinting(matrix, R, vectorsNumber);
-
-
-    puts("LETS CHECK IF THE SET IS  LINEARLY INDEPENDENT");
-
-    // MatrixPrinting(&matrixLinearInd, R, vectorsNumber);
-    OperacionGaussLinealIndependenci(&matrixLinearInd, R, &matrixEqua, vectorsNumber);
-    OperacionGaussLinealIndependenci(&matrixLinearInd, R, &matrixEqua, vectorsNumber);
-    OperacionGaussLinealIndependenci(&matrixLinearInd, R, &matrixEqua, vectorsNumber);
-    // MatrixPrinting(&matrixLinearInd, R, vectorsNumber);
-
-    conLiInd=0;
-    // printf("**valor del con=%d",conLiInd);
-    for(i=0;i<R;i++){
-        sum=0;
-        sumA=0;
-        for(k=0; k<vectorsNumber;k++){
-            
-            sum=abs(sum)+matrixLinearInd.matrix[i][k];
-            sumA=sumA+matrixLinearInd.matrix[i][k];
-        }
-        if(!(sum<=0.000009 && sumA<=0.000009 && sum>=-0.000009 && sumA>=-0.000009)){
-            //sumA!=0
-            conLiInd++;
-        }
-        
-    }   
-    // puts("IMPRIMIEDNO EN LA MMISMA FUNCION");
-    // MatrixPrinting(&matrixLinearInd, R, vectorsNumber);
-
-    if(conLiInd==vectorsNumber){
-        puts("THAT SET IS LINEAR INDEPENDECE");
-        printf("Because #Unknowns=%d=A*=%d\n\n\n",conLiInd,vectorsNumber);
-        //THE FLAG
-        flagBLI=true;
-    }else{
-        puts("THAT SET IS NOT LINEAR INDEPENDECE");
-        //THIS IS RIGHT
-        printf("Because #Unknowns=%d is different from A*=%d\n\n",vectorsNumber,conLiInd);
-    }
-
-
-    puts("So the conclusion is: ");
-    if(flagBTG){
-        if(flagBLI){
-            printf("THE SET IS A BASIS OF R^%d\n\n",R);
-        }else{
-            printf("THE SET IS NOT A BASIS OF R^%d\n",R);
-            printf("Because is no Lineary independent\n\n");
-        }
-    }else{
-        if(flagBLI){
-            printf("THE SET IS NOT A BASIS OF R^%d\n",R);
-            printf("Because is not a set Generator\n\n");
-        }else{
-            printf("THE SET IS NOT A BASIS OF R^%d\n",R);
-            printf("Because is no Lineary independent and is not a set Generator\n\n");
-        }
-
-    }
-
-
-}
 
 
 
@@ -1489,7 +566,183 @@ void swapInit(Matrix* matrix,int R, int vectorsNumber){
     }
     
 }
+bool isBasis(Matrix matrixB, int R, int vectorsNumber){
+    //From Vectors program   lol
+    float data[90];
+    Matrix matrix;
+    Matrix matrixEqua;
+    Matrix matrixConstant;
+    Matrix matrixLinearInd;
+    float sum,sumA;
+    int parameters=0,auxRows=0, unknown=0, cursorUnknon=0, auxUnknown=0;
+    int aux=0,h=0,dataAux,u=0;
+    int conLiInd=0,n,thereIs0=0;
 
+    //INIT OF the matrixLinearly
+    MatrixStarting(&matrixLinearInd,TAM);
+    //INIT OF THE MATRIX MATRIX
+    matrix=matrixB;
+    // puts("Insert the dimension of R:");
+    // fflush(stdin);
+    // scanf("%d",&R);
+    // printf("\n\n");
+    dataAux=R;
+    // puts("Insert the number of Vectors:");
+    // fflush(stdin);
+    // scanf("%d",&vectorsNumber);
+    // printf("\n\n");
+    k=R;
+    //Init of the new Matrix
+    for(i=0; i<=TAM-1; i++){
+        for(j=0; j<=TAM; j++)
+        {
+            if(j==i){
+                matrixEqua.matrix[i][j]=1;
+            }else{
+                matrixEqua.matrix[i][j]=0;
+            }
+        }
+    }
+
+    // puts("**LET'S  START **");
+    // puts("LETS CHECK IF THE SET IS A TERM GENERATOR");
+    //The last Column  
+    //Init of that
+    for(i=0; i<R; i++){
+        matrix.matrix[i][vectorsNumber]=1;
+    }
+    for(i=0;i<TAM;i++){
+
+    }
+    // puts("-Insert the Vectors");    
+    //FILLING THE MATRIX
+    for(i=0; i<vectorsNumber; i++){
+        // printf("\nFor the vector # %d: \n",i+1);
+        for(j=0; j<R; j++){
+            // printf("Insert the data of the number #%d\n",j+1);
+            // fflush(stdin);
+            // scanf("%f",&matrix->matrix[j][i]);
+            data[k]=matrix.matrix[j][i];
+            matrixLinearInd.matrix[j][i]=matrix.matrix[j][i];
+            k++;
+        }
+    }
+
+
+    if(R>vectorsNumber){
+        // puts("THAT'S NOT A SET GENERATOR");
+        // puts("(Because the matrix has not solutions)");
+        flagBTG=false;
+  
+    }else if(R==vectorsNumber){
+ 
+        OperacionGauss(&matrix, R, &matrixEqua, vectorsNumber);
+        MatrixSolutionTG(&matrix,R,vectorsNumber, &matrixEqua);
+
+
+        for(i=0;i<R;i++){
+            sumA=0;
+            sum=0;
+            for(k=0; k<vectorsNumber;k++){
+                sum=abs(sum)+matrix.matrix[i][k];
+                sumA=sumA+matrix.matrix[i][k];
+            }
+            if(sum<=0.0000009 && sumA<=0.0000009 && sum>=-0.0000009 && sumA>=-0.0000009){
+                parameters++;
+                // puts("SUma de parameters");
+            }   
+        }
+
+        if(flagTGmain){
+            // puts("THAT'S NOT A SET GENERATOR");
+            // puts("Because the matrix hasnot solutions");
+            flagBTG=false;
+    
+        
+        }else{
+            // printf("\n\n");
+            // puts("Aqui pasa calabaza");
+            // puts("THAT'S A SET GENERATOR");
+            //Flag of the basis
+            flagBTG=true;
+
+
+        }
+
+    }else if(vectorsNumber>R){
+        flagBTG=true;
+    }
+    // MatrixPrinting(matrix, R, vectorsNumber);
+    // OperacionGauss(matrix, R);
+    // MatrixPrinting(matrix, R, vectorsNumber);
+
+
+    // puts("LETS CHECK IF THE SET IS  LINEARLY INDEPENDENT");
+
+    // MatrixPrinting(&matrixLinearInd, R, vectorsNumber);
+    OperacionGaussLinealIndependenci(&matrixLinearInd, R, &matrixEqua, vectorsNumber);
+    OperacionGaussLinealIndependenci(&matrixLinearInd, R, &matrixEqua, vectorsNumber);
+    OperacionGaussLinealIndependenci(&matrixLinearInd, R, &matrixEqua, vectorsNumber);
+    // MatrixPrinting(&matrixLinearInd, R, vectorsNumber);
+
+    conLiInd=0;
+    // printf("**valor del con=%d",conLiInd);
+    for(i=0;i<R;i++){
+        sum=0;
+        sumA=0;
+        for(k=0; k<vectorsNumber;k++){
+            
+            sum=abs(sum)+matrixLinearInd.matrix[i][k];
+            sumA=sumA+matrixLinearInd.matrix[i][k];
+        }
+        if(!(sum<=0.000009 && sumA<=0.000009 && sum>=-0.000009 && sumA>=-0.000009)){
+            //sumA!=0
+            conLiInd++;
+        }
+        
+    }   
+    // puts("IMPRIMIEDNO EN LA MMISMA FUNCION");
+    // MatrixPrinting(&matrixLinearInd, R, vectorsNumber);
+
+    if(conLiInd==vectorsNumber){
+        // puts("THAT SET IS LINEAR INDEPENDECE");
+        // printf("Because #Unknowns=%d=A*=%d\n\n\n",conLiInd,vectorsNumber);
+        //THE FLAG
+        flagBLI=true;
+
+    }else{
+        // puts("THAT SET IS NOT LINEAR INDEPENDECE");
+        // //THIS IS RIGHT
+        // printf("Because #Unknowns=%d is different from A*=%d\n\n",vectorsNumber,conLiInd);
+        flagBLI=false;
+    }
+
+
+    // puts("So the conclusion is: ");
+    if(flagBTG){
+        if(flagBLI){
+            // printf("THE SET IS A BASIS OF R^%d\n\n",R);
+            return true;
+        }else{
+            // printf("THE SET IS NOT A BASIS OF R^%d\n",R);
+            // printf("Because is no Lineary independent\n\n");
+            return false;
+        }
+    }else{
+        if(flagBLI){
+            // printf("THE SET IS NOT A BASIS OF R^%d\n",R);
+            // printf("Because is not a set Generator\n\n");
+            return false;
+        }else{
+            // printf("THE SET IS NOT A BASIS OF R^%d\n",R);
+            // printf("Because is no Lineary independent and is not a set Generator\n\n");
+            return false;
+        }
+
+    }
+
+
+}
 void BothFunction(Matrix* matrix){}
 void Canonic(Matrix* matrix){}
 
