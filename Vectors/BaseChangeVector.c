@@ -37,10 +37,11 @@ bool flagLI;
 float dataInf[90];
 
 void BothFunction(Matrix* matrix);
-void Canonic(Matrix* matrix);
+void Canonic();
 void ChangeBase();
+void MatrixStartingCanonic(Matrix* matrix, int Tam);
 //FROM Vector's program
-void LinearCombination(Matrix matrixB1, Matrix matrixB2, Matrix* matrixChangeBase, int counter);
+void LinearCombination(Matrix matrixB1, Matrix matrixB2, Matrix* matrixChangeBase, int counter, int R, int vectorsNumber);
 
 
 void swap(Matrix* matrix,int aux, int R, int vectorsNumber);
@@ -81,7 +82,7 @@ void main(){
                 ChangeBase();
                 break;
             case 2:
-                Canonic(&matrix);
+                Canonic();
                 break;
             case 3:
                 BothFunction(&matrix);
@@ -111,6 +112,11 @@ void ChangeBase(){
     Matrix matrixNewBase;
     int counter;
     float value=0;
+
+    MatrixStarting(&matrixB1,TAM);
+    MatrixStarting(&matrixB2,TAM);
+    MatrixStarting(&matrixChangeBase,TAM);
+    MatrixStarting(&matrixNewBase,TAM);
     puts("\n\n\n=============================================");
     puts("================ CHANGE BASE =============");
     puts("=============================================\n\n\n");
@@ -124,6 +130,30 @@ void ChangeBase(){
     fflush(stdin);
     scanf("%d",&vectorsNumber);
     printf("\n\n");
+    //LET'S FILL BOTH MATRIX
+    puts("INSERT THE VALUE FOR B1");
+    for(i=0; i<vectorsNumber; i++){
+        printf("\nFor the vector # %d: \n",i+1);
+        for(j=0; j<R; j++){
+            printf("Insert the data of the number #%d\n",j+1);
+            fflush(stdin);
+            scanf("%f",&matrixB1.matrix[j][i]);
+        }
+    }
+    puts("INSERT THE VALUE FOR B2");
+    for(i=0; i<vectorsNumber; i++){
+        printf("\nFor the vector # %d: \n",i+1);
+        for(j=0; j<R; j++){
+            printf("Insert the data of the number #%d\n",j+1);
+            fflush(stdin);
+            scanf("%f",&matrixB2.matrix[j][i]);
+        }
+    }
+    
+    // MatrixPrinting(&matrixB1, R, vectorsNumber);
+    // MatrixPrinting(&matrixB2, R, vectorsNumber);
+
+
     if(isBasis(matrixB1, R, vectorsNumber)){
         if(isBasis(matrixB2, R,vectorsNumber)){
             //THE MAIN PROGRAM :3
@@ -132,51 +162,76 @@ void ChangeBase(){
             //REMEMBER USE THE LINEAR COMBINATION
             //This is for the coulumns of the matrix
             for(counter=0; counter<R; counter++){
-                LinearCombination(matrixB1,matrixB2, &matrixChangeBase, counter);
+                LinearCombination(matrixB1,matrixB2, &matrixChangeBase, counter, R,vectorsNumber);
             }
             puts("SO THE MATRIX CHANGE BASE IS:");
+            // MatrixPrinting(&matrixChangeBase, R, vectorsNumber);
+            
+            //LET'S SOLVE SOME BUGS WHEN -0.00000000
+            value=0;
+            for(i=0;i<R;i++){
+
+                for(k=0; k<R;k++){
+                    // printf("valor de i=%d, sum=%f, sumA=%f\n",i,sum,sumA);
+                    value=matrixChangeBase.matrix[i][k];
+                    if(value<=0.0000009 && value>=-0.0000009){
+                        matrixChangeBase.matrix[i][k]=abs(matrixChangeBase.matrix[i][k]);
+                        // puts("ENTRA");
+                    }
+                    value=0;
+            
+                }
+
+            }
             MatrixPrinting(&matrixChangeBase, R, vectorsNumber);
 
             //NOW LET'S DO THE ARITHMETIC PART
             //A(X)=(Y)
 
-            //FOR EVERY COLUMUN in B
-            for(counter=0; counter<R; counter++){
+            //FOR EVERY ROW in A
+            for(i=0; i<R; i++){
 
-                //FOR EVERY ROW in A
-                for(int a=0; counter<R; counter++){
+                //FOR EVERY Column in B
+                for(int a=0; a<R; a++){
                     value=0;
-                    //for evrey row in A
-                    for(int b=0; b<R; b++){
-                        value += matrixB1.matrix[a][b] * matrixChangeBase.matrix[b][counter];
-                    }
-                    matrixNewBase.matrix[a][counter]=value;
-                }
-                
-            }
-            puts("AND THE NEW B1->B1 is:");
+                    //for evrey data in B
 
+                    for(int b=0; b<R; b++){
+                        // value += matrixB1.matrix[i][b] * matrixChangeBase.matrix[i][b];
+                        value += matrixChangeBase.matrix[i][b] * matrixB1.matrix[b][a];
+                    }
+                    matrixNewBase.matrix[i][a]=value;
+                }
+            
+            }
+            // MatrixPrinting(&matrixB1, R, vectorsNumber);
+
+            // MatrixPrinting(&matrixNewBase, R, vectorsNumber);
+
+            puts("AND THE NEW B1->B1 is:");
             printf("B1 ==> B1{");
             for(int c=0; c<R; c++){
                 printf("(");
-                for(counter=0; counter<R; counter++){
-                    if(counter<R){
-                        printf("%f)",matrixNewBase.matrix[c][counter]);
+                for(i=0; i<R; i++){
+                    if(i==R-1){
+                        printf("%f)",matrixNewBase.matrix[i][c]);
 
                     }else{
-                        printf("%f,",matrixNewBase.matrix[c][counter]);
+                        printf("%f,",matrixNewBase.matrix[i][c]);
                     }
 
 
                 }
-                if(c<R){
-                    printf("}\n\n");
+                if(c==R-1){
+                    printf("}");
 
                 }else{
                     printf(",");
                 }
 
             }
+
+            printf("\n\n");
 
 
         }else{
@@ -194,87 +249,42 @@ void ChangeBase(){
 
 
 
-void LinearCombination(Matrix matrixB1, Matrix matrixB2, Matrix* matrixChangeBase, int counter){
+void LinearCombination(Matrix matrixB1, Matrix matrixB2, Matrix* matrixChangeBase, int counter, int R, int vectorsNumber){
+    //Counter is for rows
     float data[90];
     float dataInf[90];
     Matrix matrixEqua;
+    Matrix matrixOperation;
     int aux,h=0,dataAux,unknown=0,auxUnknown=0,cursorUnknon=0,auxRows=0,u=0;
     Matrix matrixConstant;
-    puts("\n\n\n=============================================");
-    puts("============ LINEAR COMBINATION =======");
-    puts("=============================================\n\n\n");
-    puts("Insert the dimension of R:");
-    fflush(stdin);
-    scanf("%d",&R);
-    printf("\n\n");
-    dataAux=R;
-    //WEE START MAKING THE INIT OF THE MATRIX AND FULLING WITH THE DATA
+    //LEts fill the matrix
+    MatrixStarting(&matrixOperation,TAM);
 
-    puts("Insert the number of Vectors:");
-    fflush(stdin);
-    scanf("%d",&vectorsNumber);
-    printf("\n\n");
-    k=0;
-    puts("**LET'S  START**");
-    puts("-Insert the space of U");    
+    //LET'S FILL THE VECTORS AND SPACE OF U
+    matrixOperation=matrixB2;
+    // MatrixPrinting(&matrixOperation, R, vectorsNumber);
+
     for(i=0; i<R; i++){
-        printf("Insert the data for the number #%d\n",i+1);
-        fflush(stdin);
-        scanf("%f",&matrix->matrix[i][vectorsNumber]);
-        data[k]=matrix->matrix[i][vectorsNumber];
-        k++;
+        matrixOperation.matrix[i][R]=matrixB1.matrix[i][counter];
     }
-    puts("-Insert the Vectors");    
-    for(i=0; i<vectorsNumber; i++){
-        printf("\nFor the vector # %d: \n",i+1);
-        for(j=0; j<R; j++){
-            printf("Insert the data of the number #%d\n",j+1);
-            fflush(stdin);
-            scanf("%f",&matrix->matrix[j][i]);
-            data[k]=matrix->matrix[j][i];
-            k++;
-        }
-    }
-    //NOW WE DECIDE IN FIRST CASE WITH THE R=ROWS, BUT R IS THE SPACE OF THE UNIVERSE  AND THE VECTORS=UNKNOWS
-    // R^1,R^2,R^3
-    if(R==vectorsNumber){
+    // MatrixPrinting(&matrixOperation, R, vectorsNumber);
 
-        OperacionGauss(matrix, R, &matrixEqua, vectorsNumber);
-        MatrixSolutionLC(matrix,R,vectorsNumber);
+    if(true){
+
+        OperacionGauss(&matrixOperation, R, &matrixEqua, vectorsNumber);
+        MatrixSolutionLC(&matrixOperation,R,vectorsNumber);
         // MatrixPrinting(matrix, R, vectorsNumber);
 
         if(flag){
             //GG
         }else{
-            printf("(");
-            for(i=0; i<R;i++){
-                printf("%0.2f",data[i]);
-                if(i<R-1)
-                    printf(",");
+            for(i=0; i<R; i++){
+                matrixChangeBase->matrix[i][counter]=matrixOperation.matrix[i][R];
             }
-            printf(")=");
-            for(i=0; i<R;i++){
-                printf("+%f(",matrix->matrix[i][vectorsNumber]);
-                h=0;
-                for(aux=0;aux<R;aux++){
-                    printf("%0.2f",data[dataAux]);
-                    dataAux++;
-                    h++;
-                    if(h<R){
-                        printf(",");
-                    
-                    }else{
-                        break;
-                    }
-
-                }
-                printf(")");
-
-            }
-            printf("\n\n");
 
         }
     }
+
 
 
 }
@@ -394,6 +404,22 @@ void MatrixStarting(Matrix* matrix, int Tam){
     }
 }
 
+void MatrixStartingCanonic(Matrix* matrix, int Tam){
+    int f,g;
+    for(f=0; f<=Tam-1; f++)
+    {
+        for(g=0; g<=Tam; g++)
+        {
+            if(g==f){
+                matrix->matrix[f][g]=1;
+            }else{
+                matrix->matrix[f][g]=0;
+            }
+            
+        }
+    }
+}
+
 void MatrixSolutionLC(Matrix* matrix, int n, int unknown){
     float sum,sumA;
     Matrix matrixConstant;
@@ -417,11 +443,12 @@ void MatrixSolutionLC(Matrix* matrix, int n, int unknown){
     if(flag){
         puts("THAT'S NOT A LINEAR COMBINATION OF U");
         puts("So, it doesn't belong to U");
+        puts("ERROR");
     }else{
         printf("\n\n");
-        puts("THAT'S A LINEAR COMBINATION OF U");
+        // puts("THAT'S A LINEAR COMBINATION OF U");
 
-        puts("So, it belong to U");
+        // puts("So, it belong to U");
         printf("\n");
         for(i=0;i<n;i++){ 
    
@@ -743,8 +770,221 @@ bool isBasis(Matrix matrixB, int R, int vectorsNumber){
 
 
 }
+void Canonic(Matrix* matrix){
+
+    Matrix matrixChangeBaseB1;
+    Matrix matrixChangeBaseB2;
+    Matrix matrixB1;
+    Matrix matrixB2;
+    Matrix matrixNewBaseB1;
+    Matrix matrixNewBaseB2;
+    Matrix matrixCanonic;
+    Matrix matrixin2Canonic;
+    int counter;
+    float value=0;
+
+    MatrixStarting(&matrixB1,TAM);
+    MatrixStarting(&matrixin2Canonic,TAM);
+    MatrixStarting(&matrixB2,TAM);
+    MatrixStarting(&matrixChangeBaseB1,TAM);
+    MatrixStarting(&matrixChangeBaseB2,TAM);
+
+    MatrixStarting(&matrixNewBaseB2,TAM);
+    MatrixStarting(&matrixNewBaseB1,TAM);
+    MatrixStartingCanonic(&matrixCanonic,TAM);
+    puts("\n\n\n=============================================");
+    puts("================ CHANGE BASE =============");
+    puts("=============================================\n\n\n");
+    puts("REMEMBER THAT B1 & B2 SHOULD BE A BASIS OF THE VECTORIAL SPACE V");
+    puts("Insert the dimension of R:");
+    fflush(stdin);
+    scanf("%d",&R);
+    printf("\n\n");
+    //WEE START MAKING THE INIT OF THE MATRIX AND FULLING WITH THE DATA
+    puts("Insert the number of Vectors:");
+    fflush(stdin);
+    scanf("%d",&vectorsNumber);
+    printf("\n\n");
+    //LET'S FILL BOTH MATRIX
+    puts("INSERT THE CANONIC MATRIX U WANT");
+
+    for(j=0; j<R; j++){
+        printf("Insert the data of the number #%d\n",j+1);
+        fflush(stdin);
+        scanf("%f",&matrixin2Canonic.matrix[j][0]);
+    }
+
+    puts("INSERT THE VALUE FOR B1");
+    for(i=0; i<vectorsNumber; i++){
+        printf("\nFor the vector # %d: \n",i+1);
+        for(j=0; j<R; j++){
+            printf("Insert the data of the number #%d\n",j+1);
+            fflush(stdin);
+            scanf("%f",&matrixB1.matrix[j][i]);
+        }
+    }
+    puts("INSERT THE VALUE FOR B2");
+    for(i=0; i<vectorsNumber; i++){
+        printf("\nFor the vector # %d: \n",i+1);
+        for(j=0; j<R; j++){
+            printf("Insert the data of the number #%d\n",j+1);
+            fflush(stdin);
+            scanf("%f",&matrixB2.matrix[j][i]);
+        }
+    }
+    
+    // MatrixPrinting(&matrixB1, R, vectorsNumber);
+    // MatrixPrinting(&matrixB2, R, vectorsNumber);
+
+
+    if(isBasis(matrixB1, R, vectorsNumber)){
+        if(isBasis(matrixB2, R,vectorsNumber)){
+            //THE MAIN PROGRAM :3
+
+            //LET'S FIND THE MATRIX CHANGE BASE
+            //REMEMBER USE THE LINEAR COMBINATION
+            //This is for the coulumns of the matrix
+            for(counter=0; counter<R; counter++){
+                LinearCombination(matrixCanonic,matrixB1, &matrixChangeBaseB1, counter, R,vectorsNumber);
+            }
+            puts("SO THE MATRIX CHANGE BASE FOR B1 IS:");
+            // MatrixPrinting(&matrixChangeBase, R, vectorsNumber);
+            
+            //LET'S SOLVE SOME BUGS WHEN -0.00000000
+            value=0;
+            for(i=0;i<R;i++){
+
+                for(k=0; k<R;k++){
+                    // printf("valor de i=%d, sum=%f, sumA=%f\n",i,sum,sumA);
+                    value=matrixChangeBaseB1.matrix[i][k];
+                    if(value<=0.0000009 && value>=-0.0000009){
+                        matrixChangeBaseB1.matrix[i][k]=abs(matrixChangeBaseB1.matrix[i][k]);
+                        // puts("ENTRA");
+                    }
+                    value=0;
+            
+                }
+
+            }
+            MatrixPrinting(&matrixChangeBaseB1, R, vectorsNumber);
+
+
+            MatrixStartingCanonic(&matrixCanonic,TAM);
+            for(counter=0; counter<R; counter++){
+                LinearCombination(matrixCanonic,matrixB2, &matrixChangeBaseB2, counter, R,vectorsNumber);
+            }
+            puts("SO THE MATRIX CHANGE BASE FOR B2 IS:");
+            // MatrixPrinting(&matrixChangeBase, R, vectorsNumber);
+            
+            //LET'S SOLVE SOME BUGS WHEN -0.00000000
+            value=0;
+            for(i=0;i<R;i++){
+
+                for(k=0; k<R;k++){
+                    // printf("valor de i=%d, sum=%f, sumA=%f\n",i,sum,sumA);
+                    value=matrixChangeBaseB2.matrix[i][k];
+                    if(value<=0.0000009 && value>=-0.0000009){
+                        matrixChangeBaseB2.matrix[i][k]=abs(matrixChangeBaseB2.matrix[i][k]);
+                        // puts("ENTRA");
+                    }
+                    value=0;
+            
+                }
+
+            }
+            MatrixPrinting(&matrixChangeBaseB2, R, vectorsNumber);
+
+            //NOW LET'S DO THE ARITHMETIC PART
+            //A(X)=(Y)
+
+            //FOR EVERY ROW in A
+            // MatrixPrinting(&matrixin2Canonic, R, vectorsNumber);
+
+            for(i=0; i<R; i++){
+                value=0;
+
+                //FOR EVERY Column in B
+                for(int a=0; a<R; a++){
+                    
+                    value += matrixChangeBaseB1.matrix[i][a] * matrixin2Canonic.matrix[a][0];
+        
+                }
+                matrixNewBaseB1.matrix[i][0]=value;
+            }
+            // MatrixPrinting(&matrixNewBaseB1, R, vectorsNumber);
+
+
+
+            // MatrixPrinting(&matrixin2Canonic, R, vectorsNumber);
+            for(i=0; i<R; i++){
+                value=0;
+
+                //FOR EVERY Column in B
+                for(int a=0; a<R; a++){
+                    
+                    value += matrixChangeBaseB2.matrix[i][a] * matrixin2Canonic.matrix[a][0];
+        
+                }
+                matrixNewBaseB2.matrix[i][0]=value;
+            }
+            // MatrixPrinting(&matrixNewBaseB2, R, vectorsNumber);
+
+
+            // MatrixPrinting(&matrixB1, R, vectorsNumber);
+
+            // MatrixPrinting(&matrixNewBase, R, vectorsNumber);
+
+            //SO FOR 
+            puts("SO THE CANONIC FORM OF: ");
+            printf("(");
+            for(i=0;i<R;i++){
+                if(i==R-1){
+                    printf("%f)=(",matrixin2Canonic.matrix[i][0]);
+
+                }else{
+                    printf("%f,",matrixin2Canonic.matrix[i][0]);
+                }
+                
+            }
+
+            for(i=0;i<R;i++){
+                if(i==R-1){
+                    printf("%f)B1=(",matrixNewBaseB1.matrix[i][0]);
+
+                }else{
+                    printf("%f,",matrixNewBaseB1.matrix[i][0]);
+                }
+                
+            }
+
+            for(i=0;i<R;i++){
+                if(i==R-1){
+                    printf("%f)B2",matrixNewBaseB2.matrix[i][0]);
+
+                }else{
+                    printf("%f,",matrixNewBaseB2.matrix[i][0]);
+                }
+                
+            }
+            printf("\n\n\n");
+
+
+
+
+        }else{
+            puts("THE MATRIX B2 IS NOT A BASIS");
+        }
+    }else{
+        puts("THE MATRIX B1 IS NOT A BASIS");
+    }
+
+
+
+}
+
+
 void BothFunction(Matrix* matrix){}
-void Canonic(Matrix* matrix){}
+
 
 //             mm    mm                      
 //    *@@@@* *@@@    @@                      
