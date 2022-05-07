@@ -85,7 +85,8 @@ void main(){
                 Canonic();
                 break;
             case 3:
-                BothFunction(&matrix);
+                BothFunction();
+                puts("GG");
                 break;
             case 4:
                 puts("Have a nice day :)");
