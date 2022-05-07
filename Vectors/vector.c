@@ -808,6 +808,7 @@ void Basis(Matrix* matrix){
     if(R>vectorsNumber){
         puts("THAT'S NOT A SET GENERATOR");
         puts("(Because the matrix has not solutions)");
+        flagBTG=false;
     }else if(R==vectorsNumber){
  
         OperacionGauss(matrix, R, &matrixEqua, vectorsNumber);
@@ -830,6 +831,7 @@ void Basis(Matrix* matrix){
         if(flagTGmain){
             puts("THAT'S NOT A SET GENERATOR");
             puts("Because the matrix hasnot solutions");
+            flagBTG=false;
         
         }else{
             printf("\n\n");
@@ -1110,11 +1112,11 @@ void Basis(Matrix* matrix){
 
     puts("LETS CHECK IF THE SET IS  LINEARLY INDEPENDENT");
 
-
+    // MatrixPrinting(&matrixLinearInd, R, vectorsNumber);
     OperacionGaussLinealIndependenci(&matrixLinearInd, R, &matrixEqua, vectorsNumber);
     OperacionGaussLinealIndependenci(&matrixLinearInd, R, &matrixEqua, vectorsNumber);
     OperacionGaussLinealIndependenci(&matrixLinearInd, R, &matrixEqua, vectorsNumber);
-    // MatrixPrinting(matrix, R, vectorsNumber);
+    // MatrixPrinting(&matrixLinearInd, R, vectorsNumber);
 
     conLiInd=0;
     // printf("**valor del con=%d",conLiInd);
@@ -1122,6 +1124,7 @@ void Basis(Matrix* matrix){
         sum=0;
         sumA=0;
         for(k=0; k<vectorsNumber;k++){
+            
             sum=abs(sum)+matrixLinearInd.matrix[i][k];
             sumA=sumA+matrixLinearInd.matrix[i][k];
         }
@@ -1362,7 +1365,7 @@ void OperacionGaussLinealIndependenci(Matrix* matrix, int n, Matrix* matrixEqua,
     int rowEqu=0, columnEqu=0;
     int auxCount=0;
     w=0;
-
+// MatrixPrinting(matrix, R, vectorsNumber);
     for(j=0;j<vectorsNumber;j++){
 
         for(i=0; i<n; i++){
