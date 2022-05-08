@@ -73,7 +73,7 @@ void main(){
         puts("What do U wanna do?");
         puts("1.- Change the base of Vector.");
         puts("2.- Canonic.");
-        puts("3.- Both.");
+        puts("3.- :3");
         puts("4.- Close the program.");
         fflush(stdin);
         scanf("%d",&option);
@@ -984,7 +984,9 @@ void Canonic(Matrix* matrix){
 }
 
 
-void BothFunction(Matrix* matrix){}
+void BothFunction(Matrix* matrix){
+    puts("U look nice bro :)");
+}
 
 
 //             mm    mm                      
