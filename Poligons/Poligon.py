@@ -1,91 +1,140 @@
-
-import itertools
-import sys
-from string import ascii_uppercase
-import pandas as pd
-import numpy as np
-from matplotlib import pyplot as plt
 import matplotlib.ticker as ticker
 from os import remove
 import math
-
+from string import ascii_uppercase
+import pandas as pd
+import numpy as np
+import itertools
+import sys
+from matplotlib import pyplot as plt
 # ============================================
 # ========== F U N C T I O N S ===============
 # ============================================
 
-def Tag(): 
+def labels_gen():
     size = 1
     while True:
         for s in itertools.product(ascii_uppercase, repeat=size):
             yield "".join(s)
         size +=1
 
-def Graphicate(cont, path): 
-    # Loading panda
-    data = pd.read_csv(path ,header=0,delim_whitespace=True) 
+
+
+def Graphicate(contador, ruta):
     
+    data=pd.read_csv(ruta ,header=0,delim_whitespace=True)
+
     centroide = np.mean(data, axis=0)
-    #Polar angle
+
+    # Cáculo del ángulo polar
     aux = data - centroide
-    polar_angles = np.arctan2(aux.y, aux.x) 
+    polar_angles = np.arctan2(aux.y, aux.x)
+
+    # Obtenemos un nuevo DataFrame con los vértices ordenados
     data = data.reindex(polar_angles.argsort())
-    ax = plt.subplot(111) 
-    #Make the graphic
-    plygon = plt.Polygon(data, fill=True, facecolor="#0f7aa8", edgecolor='#dbd80d', alpha=1, zorder=1)
+
+
+    ax = plt.subplot(111)
+
+    # Creamos el polígono
+    plygon = plt.Polygon(data, fill=True, facecolor="#ffb3b3", edgecolor='#ff0000', alpha=1, zorder=1)
     ax.add_patch(plygon)
-    
+
+    # Creamos los vértices
     ax.scatter(data.x, data.y, c='b', zorder=2)
-    # Number of every vertex
-    tag = Tag()
+
+    # Etiquetas para cada vértice y arista
+    etiquetas = labels_gen()
     for i, vertice in enumerate(data.values):
-        lb = next(tag)
+        lb = next(etiquetas)
         ax.annotate(str(lb), xy=vertice + 0.1)
         punto_medio = (vertice +  data.values[(i + 1) % (data.shape[0])]) / 2
-        ax.annotate(str(lb.lower()), xy = punto_medio)
-    # Show axis
+        ax.annotate(str(lb.lower()), xy=punto_medio)
+
+    # Mostramos los ejes centrados en el origen
     ax.spines['left'].set_position('zero')
     ax.spines['right'].set_color('none')
     ax.spines['bottom'].set_position('zero')
     ax.spines['top'].set_color('none')
     ax.xaxis.set_ticks_position('bottom')
     ax.yaxis.set_ticks_position('left')
-    # Color
-    ax.grid(color = 'black', linestyle = 'dashed', linewidth = 1, alpha =0.4)
-    # 
+
+    # Configuramos la rejilla
+    ax.grid(color='gray', linestyle='dashed', linewidth=1, alpha=0.4)
+
+    # Escalamos la gráfica
     ax.autoscale_view()
     ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
-    # Save the graph
-    nombreGrafica = "Poligon"+str(cont)+".jpg"
+
+    
+    #Guardamos la gráfica
+    nombreGrafica="grafica"+str(contador)+".png"
     plt.savefig(nombreGrafica)
-    # Show with plot
+    
+    # Mostramos la gráfica
     plt.show()
+    #return nombreGrafica
+
 
 def Update(Matrix, path, n): #Funcion para actualizar las coordenadas despues de cada Transformation
     file = open(path, "w")
     file.write("x y\n")
     file.close()
-    #Ciclo para obtener las coordenadas
     for i in range(0, n):
-        #Coordenada en x
         x = Matrix[i][0]
-        #Coordenada en y
         y = Matrix[i][1]
-        #Cadena para agregar a un archivo de texto del cual se leerá la coordenada
         cadena=str(x)+" "+str(y)
-        #Se abre el archivo en a para añadir
         with open(path, 'a') as f:
-            #Se inserta la cadena al archivo
             f.write(cadena+"\r")
             f.close()
 
+
+def Rotate(Matrix, c, axis, path):
+            # Matriz Transformada
+    Transformation = [[0] * 2 for i in range(2)]
+    Transformation[0][0] = math.cos(math.radians(c))
+    Transformation[0][1] = math.sin(math.radians(c))
+    Transformation[1][0] = math.sin(math.radians(c))*(-1)
+    Transformation[1][1] = math.cos(math.radians(c))
+    # print(Transformation)
+    Matrix=MultiplicateMatrix(Matrix, Transformation)
+    print(Matrix)
+    Update(Matrix, path, n)
+    return Matrix
+
+
 def MultiplicateMatrix(Matrix, Matrix2): #Funcion para multiplicar las matrices que contiene a las coordenadas
-    multiplicacion = [[0] * 2 for i in range(len(Matrix))]
-    for i in range(len(multiplicacion)):
-        for j in range(len(multiplicacion[i])):
+    matrixMultiplicate = [[0] * 2 for i in range(len(Matrix))]
+    for i in range(len(matrixMultiplicate)):
+        for j in range(len(matrixMultiplicate[i])):
             for k in range(len(Matrix2)):
-                multiplicacion [i][j] = multiplicacion [i][j] + Matrix[i][k]*Matrix2[k][j]
-    print(multiplicacion)
-    return multiplicacion
+                matrixMultiplicate [i][j] = matrixMultiplicate [i][j] + Matrix[i][k]*Matrix2[k][j]
+    # print(matrixMultiplicate)
+    return matrixMultiplicate
+
+def Cut(Matrix, c, axis, path):
+    if(axis=="X" or axis=="x"):
+        # Matriz Transformada
+        Transformation = [[0] * 2 for i in range(2)]
+        Transformation[0][0] = 1
+        Transformation[0][1] = 0
+        Transformation[1][0] = c
+        Transformation[1][1] = 1
+        # print(Transformation)
+        Matrix=MultiplicateMatrix(Matrix, Transformation)
+        print(Matrix)
+    elif(axis=="Y" or axis=="y"):
+        Transformation = [[0] * 2 for i in range(2)]
+        Transformation[0][0] = 1
+        Transformation[0][1] = c
+        Transformation[1][0] = 0
+        Transformation[1][1] = 1
+        # print(Transformation)
+        Matrix=MultiplicateMatrix(Matrix, Transformation)
+    Update(Matrix, path, n)
+    return Matrix
+
+
 
 def Reflection(Matrix, axis, path):
     if(axis=="Y" or axis=="y"):
@@ -94,7 +143,7 @@ def Reflection(Matrix, axis, path):
         Transformation[0][1] = 0
         Transformation[1][0] = 0
         Transformation[1][1] = 1
-        print(Transformation)
+        # print(Transformation)
         Matrix=MultiplicateMatrix(Matrix, Transformation)
         print(Matrix)
     elif(axis=="X" or axis=="x"):
@@ -103,7 +152,7 @@ def Reflection(Matrix, axis, path):
         Transformation[0][1] = 0
         Transformation[1][0] = 0
         Transformation[1][1] = -1
-        print(Transformation)
+        # print(Transformation)
         Matrix=MultiplicateMatrix(Matrix, Transformation)
     Update(Matrix, path, n)
     return Matrix
@@ -115,7 +164,7 @@ def Expand(Matrix, c, axis, path):
         Transformation[0][1] = 0
         Transformation[1][0] = 0
         Transformation[1][1] = 1
-        print(Transformation)
+        # print(Transformation)
         Matrix=MultiplicateMatrix(Matrix, Transformation)
         print(Matrix)
     elif(axis=="Y" or axis=="y"):
@@ -124,43 +173,11 @@ def Expand(Matrix, c, axis, path):
         Transformation[0][1] = 0
         Transformation[1][0] = 0
         Transformation[1][1] = c
-        print(Transformation)
+        # print(Transformation)
         Matrix=MultiplicateMatrix(Matrix, Transformation)
     Update(Matrix, path, n)
     return Matrix
 
-def Cut(Matrix, c, axis, path):
-    if(axis=="X" or axis=="x"):
-        Transformation = [[0] * 2 for i in range(2)]
-        Transformation[0][0] = 1
-        Transformation[0][1] = 0
-        Transformation[1][0] = c
-        Transformation[1][1] = 1
-        print(Transformation)
-        Matrix=MultiplicateMatrix(Matrix, Transformation)
-        print(Matrix)
-    elif(axis=="Y" or axis=="y"):
-        Transformation = [[0] * 2 for i in range(2)]
-        Transformation[0][0] = 1
-        Transformation[0][1] = c
-        Transformation[1][0] = 0
-        Transformation[1][1] = 1
-        print(Transformation)
-        Matrix=MultiplicateMatrix(Matrix, Transformation)
-    Update(Matrix, path, n)
-    return Matrix
-
-def Rotate(Matrix, c, axis, path):
-    Transformation = [[0] * 2 for i in range(2)]
-    Transformation[0][0] = math.cos(math.radians(c))
-    Transformation[0][1] = math.sin(math.radians(c))
-    Transformation[1][0] = math.sin(math.radians(c))*(-1)
-    Transformation[1][1] = math.cos(math.radians(c))
-    print(Transformation)
-    Matrix=MultiplicateMatrix(Matrix, Transformation)
-    print(Matrix)
-    Update(Matrix, path, n)
-    return Matrix
 
 # ================================================
 # ============== M A I N =========================
