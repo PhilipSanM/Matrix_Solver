@@ -26,11 +26,8 @@ def Graphicate(contador, ruta):
 
     centroide = np.mean(data, axis=0)
 
-    # Cáculo del ángulo polar
     aux = data - centroide
     polar_angles = np.arctan2(aux.y, aux.x)
-
-    # Obtenemos un nuevo DataFrame con los vértices ordenados
     data = data.reindex(polar_angles.argsort())
 
 
